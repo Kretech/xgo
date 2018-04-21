@@ -9,13 +9,15 @@ import (
 )
 
 //	assert a equals b, or show code where error
-func AssertEqual(t *testing.T, a interface{}, b interface{}) {
-	if fmt.Sprint(a) != fmt.Sprint(b) {
+func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{}) {
+	value := fmt.Sprint(resultValue)
+	expect := fmt.Sprint(expectValue)
+	if value != expect {
 		file, line := calledBy()
 		t.Errorf(
-			"Failure in %s:%d\nexpect:\t%v\n   but:\t%v\n----\n%s\n",
+			"Failure in %s:%d\nresult:\t%v;\nexpect:\t%v;\n----\n%s\n",
 			file, line,
-			a, b,
+			value, expect,
 			showFile(file, line),
 		)
 	}
