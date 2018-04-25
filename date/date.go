@@ -11,14 +11,7 @@ func TimeOffset(offset time.Duration) {
 	timeOffset = offset
 }
 
-func Format(format string, timestamp ...int64) string {
-	var seconds int64
-	if len(timestamp) > 0 {
-		seconds = timestamp[0]
-	} else {
-		seconds = time.Now().Local().Add(timeOffset).Unix()
-	}
-
+func ToGoFormat(format string) string {
 	rule := []string{
 		`Y`, `2006`, //  年
 		`y`, `06`,
@@ -66,6 +59,19 @@ func Format(format string, timestamp ...int64) string {
 	}
 
 	format = specs(format)
+
+	return format
+}
+
+func LocalFormat(format string, timestamp ...int64) string {
+	var seconds int64
+	if len(timestamp) > 0 {
+		seconds = timestamp[0]
+	} else {
+		seconds = time.Now().Local().Add(timeOffset).Unix()
+	}
+
+	format = ToGoFormat(format)
 
 	return time.Unix(seconds, 0).Local().Format(format)
 }

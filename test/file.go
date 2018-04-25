@@ -29,7 +29,7 @@ func showFile(filename string, line int) string {
 				if found == line {
 					tag = '→'
 				}
-				buf.WriteString(fmt.Sprintf("%c%4d |\t", tag, found))
+				buf.WriteString(fmt.Sprintf("%2c%4d |\t", tag, found))
 			}
 
 			if found >= end {
