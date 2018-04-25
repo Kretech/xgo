@@ -2,7 +2,7 @@ package word
 
 import "bytes"
 
-//	convert `a_b_c` to `aBC`
+// CamelCase convert `a_b_c` to `aBC`
 func CamelCase(v string) string {
 	buf := bytes.NewBuffer([]byte{})
 	length := len(v)
@@ -10,7 +10,7 @@ func CamelCase(v string) string {
 		if v[i] != '_' {
 			buf.WriteByte(v[i])
 		} else {
-			i += 1
+			i ++
 			if i > length {
 				continue
 			}
@@ -25,7 +25,7 @@ func CamelCase(v string) string {
 	return buf.String()
 }
 
-//	convert `ABC` to `a_b_c`
+// UnderlineCase convert `ABC` to `a_b_c`
 func UnderlineCase(v string) string {
 	buf := bytes.NewBuffer([]byte{})
 	length := len(v)
