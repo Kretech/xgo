@@ -25,9 +25,17 @@ func UnixOf(sec int64, nsec int64) *Carbon {
 	return &Carbon{t}
 }
 
+func TimeOf(t time.Time) *Carbon {
+	return &Carbon{t}
+}
+
 func Of(value string) *Carbon {
 	t := time.Now().In(defaultLoc)
 	return &Carbon{t}
+}
+
+func (c *Carbon) Time() time.Time {
+	return c.t
 }
 
 func (c *Carbon) Format(format string) string {
