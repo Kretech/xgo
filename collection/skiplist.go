@@ -1,7 +1,7 @@
 package collection
 
 import (
-	"github.com/Kretech/common/random"
+	"github.com/Kretech/common.go/random"
 )
 
 const MAX_LEVEL = 32

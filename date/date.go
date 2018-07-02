@@ -11,6 +11,7 @@ func TimeOffset(offset time.Duration) {
 	timeOffset = offset
 }
 
+// ToGoFormat 把 Y-m-d 转成 Go 格式
 func ToGoFormat(format string) string {
 	rule := []string{
 		`Y`, `2006`, //  年

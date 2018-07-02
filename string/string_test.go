@@ -3,7 +3,7 @@ package string
 import (
 	"testing"
 
-	"github.com/Kretech/common/test"
+	"github.com/Kretech/common.go/test"
 )
 
 func TestString_Equal(t *testing.T) {

@@ -3,9 +3,10 @@ package carbon
 import (
 	"time"
 
-	"github.com/Kretech/common/date"
+	"github.com/Kretech/common.go/date"
 )
 
+// Carbon
 type Carbon struct {
 	t time.Time
 }
@@ -13,6 +14,7 @@ type Carbon struct {
 // 假定多数情况下，一个进程给一个location就够了
 var defaultLoc = time.Local
 
+// 设置全局时区
 func In(loc *time.Location) {
 	defaultLoc = loc
 }
@@ -30,6 +32,7 @@ func TimeOf(t time.Time) *Carbon {
 	return &Carbon{t}
 }
 
+// 解析时间文本
 func StrOf(str string) *Carbon {
 	return Parse(str)
 }
@@ -42,6 +45,7 @@ func Parse(str string) *Carbon {
 }
 
 // wrap of time.Parse but with the carbon layout
+// 使用 Go time.Time 解析时间文本
 func TParse(layout, value string) *Carbon {
 	t, _ := time.Parse(date.ToGoFormat(layout), value)
 	return TimeOf(t)
@@ -59,6 +63,7 @@ func (c *Carbon) Time() time.Time {
 	return c.t
 }
 
+// 设置时区
 func (c Carbon) In(loc *time.Location) *Carbon {
 	c.t = c.t.In(loc)
 	return &c
@@ -69,10 +74,12 @@ func (c Carbon) Add(d time.Duration) *Carbon {
 	return &c
 }
 
-func (c *Carbon) SubTime(t time.Time) (time.Duration) {
+// 减去另一个时间：计算两个时间的差
+func (c *Carbon) SubTime(t time.Time) time.Duration {
 	return c.Time().Sub(t)
 }
 
+// 减去一段时间
 func (c Carbon) Sub(d time.Duration) *Carbon {
 	c.t = c.t.Add(-d)
 	return &c

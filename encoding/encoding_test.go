@@ -3,7 +3,7 @@ package encoding
 import (
 	"testing"
 
-	"github.com/Kretech/common/test"
+	"github.com/Kretech/common.go/test"
 )
 
 func TestBase64EncodeString(t *testing.T) {

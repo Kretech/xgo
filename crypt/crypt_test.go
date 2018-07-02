@@ -3,7 +3,7 @@ package crypt
 import (
 	"testing"
 
-	"github.com/Kretech/common/test"
+	"github.com/Kretech/common.go/test"
 )
 
 func TestMd5(t *testing.T) {

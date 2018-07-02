@@ -3,7 +3,7 @@ package word
 import (
 	"testing"
 
-	"github.com/Kretech/common/test"
+	"github.com/Kretech/common.go/test"
 )
 
 func TestCamelCase(t *testing.T) {
