@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Kretech/common.go/test"
+	"github.com/Kretech/xgo/test"
 )
 
 func TestUnixOf(t *testing.T) {

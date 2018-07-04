@@ -3,7 +3,7 @@ package carbon
 import (
 	"time"
 
-	"github.com/Kretech/common.go/date"
+	"github.com/Kretech/xgo/date"
 )
 
 // Carbon
