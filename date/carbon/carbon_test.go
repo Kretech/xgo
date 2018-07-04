@@ -1,9 +1,6 @@
 package carbon
 
 import (
-	"math/big"
-	"io/ioutil"
-	"io"
 	"testing"
 	"time"
 
@@ -55,6 +52,4 @@ func TestCarbon_Sub(t *testing.T) {
 	t1 := TParse("Y-m-d H:i:s", "2018-01-02 09:00:00")
 	t2 := t1.Sub(time.Hour)
 	test.AssertEqual(t, t2.Format("Y-m-d H:i:s"), "2018-01-02 08:00:00")
-
-	big.NewInt(x int64)
 }
