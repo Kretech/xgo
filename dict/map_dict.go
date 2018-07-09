@@ -7,32 +7,36 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Kretech/common/encoding"
+	"github.com/Kretech/xgo/encoding"
 )
 
 var (
 	ErrNotDict = errors.New(`parsed object is not map[string]interface{}`)
 )
 
-type Dict struct {
+type MapDict struct {
 	data map[string]interface{}
 }
 
-func NewDict() *Dict {
-	return &Dict{
+func (d *MapDict) String() string {
+	return ""
+}
+
+func NewMapDict() *MapDict {
+	return &MapDict{
 		data: newMap(),
 	}
 }
 
-func (d *Dict) IsEmpty() bool {
+func (d *MapDict) IsEmpty() bool {
 	return len(d.data) == 0
 }
 
-func (d *Dict) Len() int {
+func (d *MapDict) Len() int {
 	return len(d.data)
 }
 
-func (d *Dict) Get(k interface{}) interface{} {
+func (d *MapDict) Get(k interface{}) interface{} {
 	paths := strings.Split(toString(k), `.`)
 
 	var current interface{}
@@ -47,7 +51,7 @@ func (d *Dict) Get(k interface{}) interface{} {
 	return toMap(current)[paths[size-1]]
 }
 
-func (d *Dict) Set(k interface{}, v interface{}) {
+func (d *MapDict) Set(k interface{}, v interface{}) {
 	paths := strings.Split(toString(k), `.`)
 
 	parent := d.data
@@ -69,11 +73,11 @@ func (d *Dict) Set(k interface{}, v interface{}) {
 	parent[paths[size-1]] = v
 }
 
-func (d *Dict) Forget(k interface{}) {
+func (d *MapDict) Forget(k interface{}) {
 	d.Set(k, nil)
 }
 
-func (d *Dict) ParseJsonString(data []byte) (err error) {
+func (d *MapDict) ParseJsonString(data []byte) (err error) {
 	d.data, err = JsonToMap(data)
 	return
 }
@@ -95,24 +99,22 @@ func JsonToMap(data []byte) (m map[string]interface{}, err error) {
 	return
 }
 
-func (d *Dict) Keys() (keys []string) {
+func (d *MapDict) Keys() (keys []string) {
 	for k := range d.data {
 		keys = append(keys, k)
 	}
 	return
 }
 
-func (d *Dict) Values() (values []interface{}) {
+func (d *MapDict) Values() (values []interface{}) {
 	for _, v := range d.data {
 		values = append(values, v)
 	}
 	return
 }
 
-func (d *Dict) Pluck() {}
-
-func (d *Dict) Filter(fn func(interface{}, string) bool) *Dict {
-	instance := NewDict()
+func (d *MapDict) Filter(fn func(interface{}, string) bool) *MapDict {
+	instance := NewMapDict()
 	d.Each(func(v interface{}, k string) {
 		if fn(v, k) {
 			instance.Set(k, v)
@@ -121,32 +123,34 @@ func (d *Dict) Filter(fn func(interface{}, string) bool) *Dict {
 	return instance
 }
 
-func (d *Dict) Each(fn func(interface{}, string)) {
+func (d *MapDict) Each(fn func(interface{}, string)) {
 	for k, v := range d.data {
 		fn(v, k)
 	}
 }
 
-func (d *Dict) Data() map[string]interface{} {
+func (d *MapDict) Data() map[string]interface{} {
 	return d.data
 }
 
-func (d *Dict) SetData(data map[string]interface{}) {
+func (d *MapDict) SetData(data map[string]interface{}) {
 	d.data = data
 }
 
-func (d *Dict) Json() string {
+func (d *MapDict) Json() string {
 	return encoding.JsonEncode(d.data)
 }
 
 func toString(k interface{}) string {
 	switch k.(type) {
+	case fmt.Stringer:
+		return k.(fmt.Stringer).String()
 	case string:
 		return k.(string)
 	case int:
 		return strconv.FormatInt(int64(k.(int)), 10)
 	default:
-		return fmt.Sprint(k)
+		return fmt.Sprintf("%v", k)
 	}
 }
 
