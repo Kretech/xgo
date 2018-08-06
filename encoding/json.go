@@ -1,15 +1,39 @@
 package encoding
 
-import "encoding/json"
+import (
+	"bytes"
+	"encoding/json"
 
-func JsonEncode(s interface{}) string {
-	b, _ := json.Marshal(s)
-	return string(b)
+	"github.com/lunny/log"
+)
+
+const (
+	OptEscapeHtml = 1 << 1
+)
+
+func JsonEncode(s interface{}, opts ...int) string {
+
+	opt := 0
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
+
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+
+	encoder.SetEscapeHTML(opt&OptEscapeHtml > 0)
+
+	err := encoder.Encode(s)
+	if err != nil {
+		log.Errorf("xgo.encoding.JsonEncode error: %v", err)
+	}
+
+	return string(buffer.Bytes())
 }
 
-func JsonDecode(s interface{}, v interface{}) () {
-	if ss, ok := s.(string); ok {
-		s = []byte(ss)
+func JsonDecode(str interface{}, ele interface{}) () {
+	if ss, ok := str.(string); ok {
+		str = []byte(ss)
 	}
-	json.Unmarshal(s.([]byte), &v)
+	json.Unmarshal(str.([]byte), &ele)
 }

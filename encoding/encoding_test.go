@@ -18,7 +18,13 @@ func TestJsonEncode(t *testing.T) {
 	m := make(map[string]interface{})
 	m[`a`] = 4
 	m[`tt`] = `hello`
-	test.AssertEqual(t, JsonEncode(m), `{"a":4,"tt":"hello"}`)
+	expect := make(map[string]interface{})
+	JsonDecode(`{"a":4,"tt":"hello"}`, &expect)
+	test.AssertEqual(t, m, expect)
+
+	m[`escape`] = `&`
+	test.AssertEqual(t, JsonEncode(m), `{"a":4,"tt":"hello","escape":"&"}`)
+	test.AssertEqual(t, JsonEncode(m, OptEscapeHtml), `{"a":4,"tt":"hello","escape":"\u0026"}`)
 }
 
 func TestJsonDecodeMap(t *testing.T) {

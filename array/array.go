@@ -55,7 +55,7 @@ func Slice(slice interface{}) *Array {
 	return l
 }
 
-func (this *Array) KeyBy(field string) (*dict.MapDict) {
+func (this *Array) KeyBy(field string) *dict.MapDict {
 	d := dict.NewMapDict()
 
 	for it := this.Front(); it != nil; it = it.Next() {
@@ -65,7 +65,7 @@ func (this *Array) KeyBy(field string) (*dict.MapDict) {
 	return d
 }
 
-func (this *Array) each(fn func(*list.Element)) () {
+func (this *Array) each(fn func(*list.Element)) {
 	for it := this.Front(); it != nil; it = it.Next() {
 		fn(it)
 	}
