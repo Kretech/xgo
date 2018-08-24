@@ -14,7 +14,7 @@ func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{})
 	if isEqual(resultValue, expectValue) {
 		file, line := calledBy()
 		t.Errorf(
-			"Failure in %s:%d\nresult:\t%+v;\nexpect:\t%+v;\n----\n%s\n",
+			"Failure in %s:%d\nresult:\t%+v\nexpect:\t%+v\n----\n%s\n",
 			file, line,
 			resultValue, expectValue,
 			showFile(file, line),

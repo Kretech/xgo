@@ -3,8 +3,7 @@ package encoding
 import (
 	"bytes"
 	"encoding/json"
-
-	"github.com/lunny/log"
+	"log"
 )
 
 const (
@@ -25,13 +24,12 @@ func JsonEncode(s interface{}, opts ...int) string {
 
 	err := encoder.Encode(s)
 	if err != nil {
-		log.Errorf("xgo.encoding.JsonEncode error: %v", err)
+		log.Printf("xgo.encoding.JsonEncode error: %v", err)
 	}
-
-	return string(buffer.Bytes())
+	return buffer.String()
 }
 
-func JsonDecode(str interface{}, ele interface{}) () {
+func JsonDecode(str interface{}, ele interface{}) {
 	if ss, ok := str.(string); ok {
 		str = []byte(ss)
 	}
