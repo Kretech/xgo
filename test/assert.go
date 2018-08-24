@@ -1,7 +1,6 @@
 package test
 
 import (
-	"fmt"
 	"os"
 	"reflect"
 	"runtime"
@@ -11,25 +10,35 @@ import (
 
 //	assert a equals b, or show code where error
 func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{}) {
+
 	if isEqual(resultValue, expectValue) {
-		file, line := calledBy()
-		t.Errorf(
-			"Failure in %s:%d\nresult:\t%+v\nexpect:\t%+v\n----\n%s\n",
-			file, line,
-			resultValue, expectValue,
-			showFile(file, line),
-		)
+		return
 	}
+
+	file, line := calledBy()
+	t.Errorf(
+		"Failure in %s:%d\nresult:\t%+v\nexpect:\t%+v\n----\n%s\n",
+		file, line,
+		resultValue, expectValue,
+		showFile(file, line),
+	)
 }
 
 func isEqual(resultValue interface{}, expectValue interface{}) bool {
+	if resultValue == nil || expectValue == nil {
+		return resultValue == expectValue
+	}
+
 	switch reflect.TypeOf(expectValue).Kind() {
+
 	case reflect.Map:
 		return reflect.DeepEqual(resultValue, expectValue)
+
 	default:
-		value := fmt.Sprint(resultValue)
-		expect := fmt.Sprint(expectValue)
-		return value == expect
+		return resultValue == expectValue
+		//value := fmt.Sprint(resultValue)
+		//expect := fmt.Sprint(expectValue)
+		//return value == expect
 	}
 }
 
