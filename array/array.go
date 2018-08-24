@@ -32,7 +32,7 @@ func newArray() *Array {
 	}
 }
 
-// Of 提供把普通列表转换成 Array 的入口
+// Values 提供把普通列表转换成 Array 的入口
 func Values(elements ...interface{}) *Array {
 	a := newArray()
 	for idx, _ := range elements {
