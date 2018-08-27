@@ -7,6 +7,7 @@ import (
 )
 
 func showFile(filename string, line int) string {
+	// todo cache
 	file, _ := ioutil.ReadFile(filename)
 	buf := bytes.NewBufferString(``)
 

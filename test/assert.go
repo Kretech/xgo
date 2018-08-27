@@ -1,12 +1,17 @@
 package test
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"runtime"
 	"strings"
 	"testing"
 )
+
+func AssertTrue(t *testing.T, expectValue interface{}) {
+	AssertEqual(t, true, expectValue)
+}
 
 //	assert a equals b, or show code where error
 func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{}) {
@@ -15,30 +20,33 @@ func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{})
 		return
 	}
 
+	resultValue = fmt.Sprintf("%+v", resultValue)
+	expectValue = fmt.Sprintf("%+v", expectValue)
+
 	file, line := calledBy()
 	t.Errorf(
-		"Failure in %s:%d\nresult:\t%+v\nexpect:\t%+v\n----\n%s\n",
+		"Failure in %s:%d\nresult:(%d)\t%+v\nexpect:(%d)\t%+v\n----\n%s\n",
 		file, line,
-		resultValue, expectValue,
+		len(resultValue.(string)), resultValue,
+		len(expectValue.(string)), expectValue,
 		showFile(file, line),
 	)
 }
 
-func isEqual(resultValue interface{}, expectValue interface{}) bool {
-	if resultValue == nil || expectValue == nil {
-		return resultValue == expectValue
+func isEqual(actualValue interface{}, expectValue interface{}) bool {
+	if actualValue == nil || expectValue == nil {
+		return actualValue == expectValue
 	}
 
 	switch reflect.TypeOf(expectValue).Kind() {
 
-	case reflect.Map:
-		return reflect.DeepEqual(resultValue, expectValue)
+	case reflect.Map, reflect.Struct, reflect.Slice, reflect.Array:
+		return reflect.DeepEqual(actualValue, expectValue)
 
 	default:
-		return resultValue == expectValue
-		//value := fmt.Sprint(resultValue)
-		//expect := fmt.Sprint(expectValue)
-		//return value == expect
+		actual := fmt.Sprintf("%v", actualValue)
+		expect := fmt.Sprintf("%v", expectValue)
+		return actual == expect
 	}
 }
 
