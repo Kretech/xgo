@@ -26,7 +26,17 @@ func JsonEncode(s interface{}, opts ...int) string {
 	if err != nil {
 		log.Printf("xgo.encoding.JsonEncode error: %v", err)
 	}
-	return buffer.String()
+
+	b := buffer.Bytes()
+
+	if len(b) > 0 && b[len(b)-1] == '\n' {
+		// 去掉 go std 给加的 \n
+		// 正常的 json 末尾是不会有 \n 的
+		// @see https://github.com/golang/go/issues/7767
+		b = b[:len(b)-1]
+	}
+
+	return string(b)
 }
 
 func JsonDecode(str interface{}, ele interface{}) {

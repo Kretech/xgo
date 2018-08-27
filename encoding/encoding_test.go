@@ -1,6 +1,8 @@
 package encoding
 
 import (
+	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/Kretech/xgo/test"
@@ -14,28 +16,19 @@ func TestBase64Decode(t *testing.T) {
 	test.AssertEqual(t, Base64Decode(`aGVsbG8=`), `hello`)
 }
 
-func TestJsonEncode(t *testing.T) {
+func TestJsonEncodeMap(t *testing.T) {
 	m := make(map[string]interface{})
-	m[`a`] = 4
+	m[`a`] = 4.0
 	m[`tt`] = `hello`
+	b, _ := json.Marshal(m)
+
 	expect := make(map[string]interface{})
-	JsonDecode(`{"a":4,"tt":"hello"}`, &expect)
+	JsonDecode(b, &expect)
 	test.AssertEqual(t, m, expect)
 
 	m[`escape`] = `&`
-	test.AssertEqual(t, JsonEncode(m), `{"a":4,"tt":"hello","escape":"&"}`)
-	test.AssertEqual(t, JsonEncode(m, OptEscapeHtml), `{"a":4,"tt":"hello","escape":"\u0026"}`)
-}
-
-func TestJsonDecodeMap(t *testing.T) {
-	m := make(map[string]interface{})
-	m[`a`] = 4
-	m[`tt`] = `hello`
-
-	m2 := make(map[string]interface{})
-	JsonDecode(`{"a":4,"tt":"hello"}`, &m2)
-
-	test.AssertEqual(t, JsonEncode(m), JsonEncode(m2))
+	test.AssertTrue(t, strings.Contains(JsonEncode(m), `"escape":"&"`))
+	test.AssertTrue(t, strings.Contains(JsonEncode(m, OptEscapeHtml), `"escape":"\u0026"`))
 }
 
 func TestJsonDecodeObject(t *testing.T) {
@@ -53,5 +46,5 @@ func TestJsonDecodeObject(t *testing.T) {
 	m2 := User{}
 	JsonDecode(`{"id":4,"name":"hi"}`, &m2)
 
-	test.AssertEqual(t, JsonEncode(m1), JsonEncode(m2))
+	test.AssertEqual(t, m1, m2)
 }
