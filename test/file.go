@@ -6,9 +6,28 @@ import (
 	"io/ioutil"
 )
 
+var fileCache map[string][]byte
+
+func init() {
+	fileCache = make(map[string][]byte)
+}
+
+func readFile(filename string) ([]byte, error) {
+	file := fileCache[filename]
+	if file != nil && len(file) > 0 {
+		return file, nil
+	}
+
+	file, err := ioutil.ReadFile(filename)
+
+	fileCache[filename] = file
+
+	return file, err
+}
+
 func showFile(filename string, line int) string {
-	// todo cache
-	file, _ := ioutil.ReadFile(filename)
+	file, _ := readFile(filename)
+
 	buf := bytes.NewBufferString(``)
 
 	size := len(file)

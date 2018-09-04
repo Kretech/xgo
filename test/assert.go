@@ -1,58 +1,19 @@
 package test
 
-import (
-	"fmt"
-	"os"
-	"reflect"
-	"runtime"
-	"strings"
-	"testing"
-)
+import "testing"
 
-func AssertTrue(t *testing.T, expectValue interface{}) {
-	AssertEqual(t, true, expectValue)
+type Assert struct {
+	T testing.T
 }
 
-//	assert a equals b, or show code where error
-func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{}) {
-
-	if isEqual(resultValue, expectValue) {
-		return
-	}
-
-	resultValue = fmt.Sprintf("%+v", resultValue)
-	expectValue = fmt.Sprintf("%+v", expectValue)
-
-	file, line := calledBy()
-	t.Errorf(
-		"Failure in %s:%d\nresult:(%d)\t%+v\nexpect:(%d)\t%+v\n----\n%s\n",
-		file, line,
-		len(resultValue.(string)), resultValue,
-		len(expectValue.(string)), expectValue,
-		showFile(file, line),
-	)
+func A(t *testing.T) *Assert {
+	return &Assert{*t}
 }
 
-func isEqual(actualValue interface{}, expectValue interface{}) bool {
-	if actualValue == nil || expectValue == nil {
-		return actualValue == expectValue
-	}
-
-	switch reflect.TypeOf(expectValue).Kind() {
-
-	case reflect.Map, reflect.Struct, reflect.Slice, reflect.Array:
-		return reflect.DeepEqual(actualValue, expectValue)
-
-	default:
-		actual := fmt.Sprintf("%v", actualValue)
-		expect := fmt.Sprintf("%v", expectValue)
-		return actual == expect
-	}
+func (a *Assert) Equal(actualValue interface{}, expectValue interface{}) {
+	AssertEqual(&a.T, actualValue, expectValue)
 }
 
-func calledBy() (string, int) {
-	_, file, line, _ := runtime.Caller(2)
-	return file, line
-	file = strings.TrimPrefix(file, os.Getenv(`GOPATH`))
-	return `$GOPATH` + file, line
+func (a *Assert) True(actualValue interface{}) {
+	a.Equal(actualValue, true)
 }

@@ -1,16 +1,16 @@
 package test
 
-import (
-	"testing"
-)
+import "testing"
 
-func TestAssertEqual(t *testing.T) {
-	AssertEqual(t, true, true)
-	AssertEqual(t, true, 1 == 1)
+func TestAssert_Equal(t *testing.T) {
+	a := A(t)
 
-	AssertEqual(t, 2, 3-1)
-	AssertEqual(t, 0, 0)
-	AssertEqual(t, int(0), int64(0))
+	a.Equal(true, true)
+	a.Equal(true, 1 == 1)
 
-	AssertEqual(t, "hello", "h"+"ello")
+	a.Equal(2, 3-1)
+	a.Equal(0, 0)
+	a.Equal(int(0), int64(0))
+
+	a.Equal("hello", "h"+"ello")
 }
