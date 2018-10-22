@@ -7,7 +7,10 @@ import (
 	"reflect"
 
 	"github.com/Kretech/xgo/dict"
+	"github.com/Kretech/xgo/short"
 )
+
+type any = short.Any
 
 // Stream 提供对一组数据集的操作，接口 api 参考自 Laravel 的 Collection 和 Java 的 stream
 type Array struct {
@@ -32,8 +35,8 @@ func newArray() *Array {
 	}
 }
 
-// Values 提供把普通列表转换成 Array 的入口
-func Values(elements ...interface{}) *Array {
+// Values 通过传入一组任意元素来构造 Array
+func Values(elements ...any) *Array {
 	a := newArray()
 	for idx, _ := range elements {
 		a.PushBack(elements[idx])
@@ -41,7 +44,8 @@ func Values(elements ...interface{}) *Array {
 	return a
 }
 
-func Slice(slice interface{}) *Array {
+// Slice 通过 slice 构造 Array
+func Slice(slice any) *Array {
 	e := reflect.ValueOf(slice)
 	if e.Kind() != reflect.Slice {
 		panic("array.Slice() must receive a slice ([]type)")
@@ -71,7 +75,7 @@ func (this *Array) each(fn func(*list.Element)) {
 	}
 }
 
-func getField(v interface{}, field string) interface{} {
+func getField(v any, field string) any {
 
 	elem := reflect.ValueOf(v).Elem()
 	switch elem.Kind() {
@@ -84,14 +88,14 @@ func getField(v interface{}, field string) interface{} {
 	panic("")
 }
 
-func getMapField(v reflect.Value, field string) interface{} {
-	return v.MapIndex(reflect.ValueOf(field)).String()
+func getMapField(v reflect.Value, field string) any {
+	return v.MapIndex(reflect.ValueOf(field)).Interface()
 }
 
-func getStructField(v reflect.Value, field string) interface{} {
-	return v.FieldByName(field)
+func getStructField(v reflect.Value, field string) any {
+	return v.FieldByName(field).Interface()
 }
 
-func toString(v interface{}) string {
+func toString(v any) string {
 	return fmt.Sprintf("%v", v)
 }
