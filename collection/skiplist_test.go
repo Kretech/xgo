@@ -2,10 +2,14 @@ package collection
 
 import (
 	"fmt"
+	"sort"
 	"testing"
+
+	"github.com/Kretech/xgo/random"
+	"github.com/Kretech/xgo/test"
 )
 
-func newList() *skipList {
+func newSimpleSkipList() *skipList {
 	l := NewSkipList()
 
 	l.Put(4, 6)
@@ -18,7 +22,7 @@ func newList() *skipList {
 
 func TestBasic(t *testing.T) {
 
-	l := newList()
+	l := newSimpleSkipList()
 
 	l.Each(func(score int, data interface{}) {
 		fmt.Println(score, data)
@@ -27,14 +31,14 @@ func TestBasic(t *testing.T) {
 }
 
 func TestSkipList_RangeByScore(t *testing.T) {
-	l := newList()
+	l := newSimpleSkipList()
 	l.RangeByScore(3, 7, func(node *SkipListNode) {
 		fmt.Print(node.Score, ",")
 	})
 }
 
 func TestSkipList_DelByScore(t *testing.T) {
-	l := newList()
+	l := NewSkipList()
 
 	l.DelByScore(4)
 
@@ -42,4 +46,23 @@ func TestSkipList_DelByScore(t *testing.T) {
 		fmt.Print(node.Data, " ")
 	})
 
+}
+
+func TestSkipList_Sort(t *testing.T) {
+	l := NewSkipList()
+
+	num := 10
+	a := make([]int, num)
+	for i := 0; i < num; i++ {
+		a[i] = random.Int() % 1000000
+		l.Put(a[i], a[i])
+	}
+
+	i := 0
+	l.Each(func(score int, data interface{}) {
+		a[i] = data.(int)
+		i++
+	})
+
+	test.BeTrue(t, sort.IntsAreSorted(a))
 }
