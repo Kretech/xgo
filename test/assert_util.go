@@ -9,11 +9,22 @@ import (
 	"testing"
 )
 
-func AssertTrue(t *testing.T, expectValue interface{}) {
-	AssertEqual(t, true, expectValue)
+var (
+	// Alias
+	BeTrue  = AssertTrue
+	BeNil   = AssertNil
+	BeEqual = AssertEqual
+)
+
+func AssertTrue(t *testing.T, resultValue interface{}) {
+	AssertEqual(t, resultValue, true)
 }
 
-//	assert a equals b, or show code where error
+func AssertNil(t *testing.T, resultValue interface{}) {
+	AssertEqual(t, resultValue, nil)
+}
+
+// 	assert a equals b, or show code where error
 func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{}) {
 
 	if isEqual(resultValue, expectValue) {
