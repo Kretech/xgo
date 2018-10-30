@@ -2,6 +2,7 @@ package version
 
 import (
 	"errors"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -71,12 +72,30 @@ func Compare(v1, v2 string) (result int, err error) {
 	}
 
 	if hash1 > hash2 {
-		return 1, err
+		return 1, nil
 	}
 
 	if hash1 < hash2 {
-		return -1, err
+		return -1, nil
 	}
 
-	return 0, err
+	return 0, nil
+}
+
+func LessThan(v1, v2 string) (bool) {
+	r, err := Compare(v1, v2)
+	if err != nil {
+		log.Println(`Error In version/compare.go#LessThan`, err)
+	}
+
+	return r == -1
+}
+
+func GreaterThan(v1, v2 string) (bool) {
+	r, err := Compare(v1, v2)
+	if err != nil {
+		log.Println(`Error In version/compare.go#GreaterThan`, err)
+	}
+
+	return r == 1
 }
