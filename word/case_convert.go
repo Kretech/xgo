@@ -1,6 +1,9 @@
 package word
 
-import "bytes"
+import (
+	"bytes"
+	"strings"
+)
 
 // CamelCase convert `a_b_c` to `aBC`
 func CamelCase(v string) string {
@@ -38,4 +41,12 @@ func UnderlineCase(v string) string {
 		}
 	}
 	return buf.String()
+}
+
+func UpperFirst(v string) string {
+	return strings.ToUpper(string(v[0])) + v[1:]
+}
+
+func LowerFirst(v string) string {
+	return strings.ToLower(string(v[0])) + v[1:]
 }
