@@ -24,7 +24,7 @@ func G() *rwmap {
 
 	m, ok := _globals.ms[GoID()]
 	if !ok {
-		_globals.ms[GoID()] = rwmap{data: make(map[interface{}]interface{}, 4)}
+		_globals.ms[GoID()] = *newRWMap()
 		m = _globals.ms[GoID()]
 	}
 
@@ -37,6 +37,10 @@ func G() *rwmap {
 type rwmap struct {
 	data map[interface{}]interface{}
 	rw   sync.RWMutex
+}
+
+func newRWMap() *rwmap {
+	return &rwmap{data: make(map[interface{}]interface{}, 4)}
 }
 
 func (m *rwmap) Set(key interface{}, value interface{}) {

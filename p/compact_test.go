@@ -4,6 +4,8 @@
 package p_test
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/Kretech/xgo/p"
@@ -15,11 +17,17 @@ func TestAll(t *testing.T) {
 	cas := test.TR(t)
 
 	cas.Add(testArgsName)
+	cas.Add(testConcurrenceArgsName)
 	cas.Add(testCompact)
 
-	// cas.Add(func(t *test.Assert) {
-	// 	q.Q(runtime.NumGoroutine(), p.GoID())
-	// })
+	// todo 这是一个bug，同一行调用多次 varName 时，无法识别是第几个，现在都认为是第一个
+	cas.Add(func(t *test.Assert) {
+		a := 3
+		b := 4
+		c := 4
+		fmt.Println(p.VarName(a, b),
+			p.VarName(b, a), p.VarName(c))
+	})
 }
 
 func testArgsName(as *test.Assert) {
@@ -27,6 +35,26 @@ func testArgsName(as *test.Assert) {
 	b := 4
 	a1 := p.VarName(a, b)
 	as.Equal(a1, []string{`a`, `b`})
+}
+
+func testConcurrenceArgsName(as *test.Assert) {
+	a := 3
+	c := 4
+	wg := sync.WaitGroup{}
+	for i := 1; i < 10; i++ {
+		wg.Add(1)
+		go func() {
+			for i := 1; i < 20; i++ {
+				if i%2 == 1 {
+					as.Equal(p.VarName(a, c), []string{`a`, `c`})
+				} else {
+					as.Equal(p.VarName(c), []string{`c`})
+				}
+			}
+			wg.Done()
+		}()
+	}
+	wg.Wait()
 }
 
 func testCompact(as *test.Assert) {

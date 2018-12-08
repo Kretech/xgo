@@ -4,7 +4,6 @@ import (
 	"runtime"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/Kretech/xgo/p"
 	"github.com/Kretech/xgo/test"
@@ -24,7 +23,6 @@ func TestG(t *testing.T) {
 				t.Equal(id1, id2)
 
 				p.G().Set(`gid`, id1)
-				time.Sleep(10 * time.Microsecond)
 				runtime.Gosched()
 				t.Equal(p.G().Get(`gid`), id2)
 
