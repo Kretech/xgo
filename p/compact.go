@@ -7,27 +7,26 @@ import (
 	"go/token"
 	"runtime"
 	"strings"
-	"sync"
 )
-
-var compactInitOnce sync.Once
 
 func VarName(args ...interface{}) []string {
 	return varNameDepth(1, args...)
 }
 
 func varNameDepth(skip int, args ...interface{}) (c []string) {
-
 	pc, _, _, _ := runtime.Caller(skip)
-	fc := runtime.FuncForPC(pc)
-	ss := strings.Split(fc.Name(), "/")
+	callFunc := runtime.FuncForPC(pc)
+	ss := strings.Split(callFunc.Name(), "/")
 
-	argNameFunName := ss[len(ss)-1]
+	// 用户通过这个方法来获取变量名。
+	// 可能有几种写法：p.F() alias.F() .F()，我们需要解析 import 来确定
+	shouldCallName := ss[len(ss)-1]
+	shouldCallPkg := callFunc.Name()[:strings.LastIndex(callFunc.Name(), `.`)]
 
 	_, file, line, _ := runtime.Caller(skip + 1)
 
 	// todo 一行多次调用时，还需根据 runtime 找到 column 一起定位
-	cacheKey := fmt.Sprintf("%s:%d@%s", file, line, argNameFunName)
+	cacheKey := fmt.Sprintf("%s:%d@%s", file, line, shouldCallName)
 	return cacheGet(cacheKey, func() interface{} {
 
 		r := []string{}
@@ -35,7 +34,33 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 
 		fset := token.NewFileSet()
 		f, _ := parser.ParseFile(fset, file, nil, 0)
-		// q.Q(e)
+
+		// import alias
+		aliasImport := make(map[string]string)
+		for _, decl := range f.Decls {
+			decl, ok := decl.(*ast.GenDecl)
+			if !ok {
+				continue
+			}
+
+			for _, spec := range decl.Specs {
+				is, ok := spec.(*ast.ImportSpec)
+				if !ok {
+					continue
+				}
+
+				if is.Name != nil && strings.Trim(is.Path.Value, `""`) == shouldCallPkg {
+					aliasImport[is.Name.Name] = shouldCallPkg
+					shouldCallName = is.Name.Name + "." + strings.Split(shouldCallName, ".")[1]
+
+					shouldCallName = strings.TrimLeft(shouldCallName, `.`)
+				}
+			}
+		}
+
+		// q.Q(shouldCallName, shouldCallPkg, aliasImport)
+
+		// q.Q(f)
 		// q.Q(f.Decls[1].(*ast.FuncDecl).Body.List[1].(*ast.ExprStmt).X.(*ast.CallExpr).Args[0].(*ast.CallExpr).Args[0].(*ast.Ident).Obj)
 		ast.Inspect(f, func(node ast.Node) bool {
 			if found {
@@ -51,18 +76,33 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 				return true
 			}
 
-			fn, ok := call.Fun.(*ast.SelectorExpr)
-			if !ok {
-				return true
+			// q.Q(call)
+			isArgsCall := func(expr *ast.CallExpr, shouldCallName string) bool {
+				if strings.Contains(shouldCallName, ".") {
+					fn, ok := call.Fun.(*ast.SelectorExpr)
+					if !ok {
+						return false
+					}
+
+					currentName := fn.X.(*ast.Ident).Name + "." + fn.Sel.Name
+
+					// q.Q(shouldCallName, currentName)
+					return shouldCallName == currentName
+				} else {
+					fn, ok := call.Fun.(*ast.Ident)
+					if !ok {
+						return false
+					}
+
+					return fn.Name == shouldCallName
+				}
+
+				return false
 			}
 
-			currentName := fn.X.(*ast.Ident).Name + "." + fn.Sel.Name
-
-			if argNameFunName != currentName {
+			if !isArgsCall(call, shouldCallName) {
 				return true
 			}
-
-			// q.Q(argNameFunName, currentName)
 
 			if fset.Position(call.End()).Line != line {
 				return true

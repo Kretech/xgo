@@ -16,9 +16,9 @@ import (
 func TestAll(t *testing.T) {
 	cas := test.TR(t)
 
-	cas.Add(testArgsName)
-	cas.Add(testConcurrenceArgsName)
-	cas.Add(testCompact)
+	// cas.Add(testArgsName)
+	// cas.Add(testConcurrenceArgsName)
+	// cas.Add(testCompact)
 
 	// todo 这是一个bug，同一行调用多次 varName 时，无法识别是第几个，现在都认为是第一个
 	cas.Add(func(t *test.Assert) {
@@ -30,14 +30,18 @@ func TestAll(t *testing.T) {
 	})
 }
 
-func testArgsName(as *test.Assert) {
+func TestArgsName(t *testing.T) {
+	as := test.A(t)
+
 	a := 3
 	b := 4
 	a1 := p.VarName(a, b)
 	as.Equal(a1, []string{`a`, `b`})
 }
 
-func testConcurrenceArgsName(as *test.Assert) {
+func TestConcurrenceArgsName(t *testing.T) {
+	as := test.A(t)
+
 	a := 3
 	c := 4
 	wg := sync.WaitGroup{}
@@ -57,7 +61,9 @@ func testConcurrenceArgsName(as *test.Assert) {
 	wg.Wait()
 }
 
-func testCompact(as *test.Assert) {
+func TestCompact(t *testing.T) {
+	as := test.A(t)
+
 	age := 3
 	name := `zhang`
 
