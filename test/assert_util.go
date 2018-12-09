@@ -2,10 +2,8 @@ package test
 
 import (
 	"fmt"
-	"os"
 	"reflect"
 	"runtime"
-	"strings"
 	"testing"
 )
 
@@ -26,7 +24,10 @@ func AssertNil(t *testing.T, resultValue interface{}) {
 
 // 	assert a equals b, or show code where error
 func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{}) {
+	assertEqualSkip(t, 1, resultValue, expectValue)
+}
 
+func assertEqualSkip(t *testing.T, skip int, resultValue interface{}, expectValue interface{}) {
 	if isEqual(resultValue, expectValue) {
 		return
 	}
@@ -34,7 +35,7 @@ func AssertEqual(t *testing.T, resultValue interface{}, expectValue interface{})
 	resultValue = fmt.Sprintf("%+v", resultValue)
 	expectValue = fmt.Sprintf("%+v", expectValue)
 
-	file, line := calledBy()
+	file, line := calledBy(skip)
 	t.Errorf(
 		"Failure in %s:%d\nresult:(%d)\t%+v\nexpect:(%d)\t%+v\n----\n%s\n",
 		file, line,
@@ -61,9 +62,7 @@ func isEqual(actualValue interface{}, expectValue interface{}) bool {
 	}
 }
 
-func calledBy() (string, int) {
-	_, file, line, _ := runtime.Caller(2)
+func calledBy(skip int) (string, int) {
+	_, file, line, _ := runtime.Caller(2 + skip)
 	return file, line
-	file = strings.TrimPrefix(file, os.Getenv(`GOPATH`))
-	return `$GOPATH` + file, line
 }
