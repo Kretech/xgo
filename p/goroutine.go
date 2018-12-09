@@ -6,6 +6,7 @@ import (
 	"github.com/petermattis/goid"
 )
 
+// GoID 获取当前 Goroutine 的 ID
 func GoID() int {
 	return int(goid.Get())
 }
@@ -15,6 +16,8 @@ var _globals struct {
 	sync.RWMutex
 }
 
+// G 获取当前协程内的全局变量
+// 参考自 http://php.net/manual/zh/reserved.variables.globals.php
 func G() *rwmap {
 	_globals.Lock()
 

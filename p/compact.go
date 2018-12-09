@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+// VarName 用来获取变量的名字
+// VarName(a, b) => []string{"a", "b"}
 func VarName(args ...interface{}) []string {
 	return varNameDepth(1, args...)
 }
@@ -120,6 +122,9 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 	}).([]string)
 }
 
+// Compact 将多个变量打包到一个字典里
+// a,b:=1,2 Comapct(a, b) => {"a":1,"b":2}
+// 参考自 http://php.net/manual/zh/function.compact.php
 func Compact(args ...interface{}) (r map[string]interface{}) {
 	ps := varNameDepth(1, args...)
 
