@@ -7,7 +7,7 @@ import (
 
 // 这个包的代码复制于 math/rand/rand.go
 // 目的在于把 globalRand 的source改为时间戳
-var globalRand = rand.New(rand.NewSource(time.Now().UnixNano()))
+var globalRand = rand.New(&lockedSource{src: rand.NewSource(time.Now().UnixNano()).(rand.Source64)})
 
 // Seed uses the provided seed value to initialize the default Source to a
 // deterministic state. If Seed is not called, the generator behaves as
