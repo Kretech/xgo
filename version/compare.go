@@ -16,6 +16,13 @@ const (
 	maxPerSection = 1<<perSectionBit - 1
 )
 
+const (
+	// 跳过用0表示结果，避免默认值带来的影响
+	resultEqual = iota + 1
+	resultGreater
+	resultLess
+)
+
 var vCache map[string]uint64
 
 func init() {
@@ -72,30 +79,43 @@ func Compare(v1, v2 string) (result int, err error) {
 	}
 
 	if hash1 > hash2 {
-		return 1, nil
+		return resultGreater, nil
 	}
 
 	if hash1 < hash2 {
-		return -1, nil
+		return resultLess, nil
+	}
+
+	if hash1 == hash2 {
+		return resultEqual, nil
 	}
 
 	return 0, nil
 }
 
-func LessThan(v1, v2 string) (bool) {
+func LessThan(v1, v2 string) bool {
 	r, err := Compare(v1, v2)
 	if err != nil {
 		log.Println(`Error In version/compare.go#LessThan`, err)
 	}
 
-	return r == -1
+	return r == resultLess
 }
 
-func GreaterThan(v1, v2 string) (bool) {
+func GreaterThan(v1, v2 string) bool {
 	r, err := Compare(v1, v2)
 	if err != nil {
 		log.Println(`Error In version/compare.go#GreaterThan`, err)
 	}
 
-	return r == 1
+	return r == resultGreater
+}
+
+func Equal(v1, v2 string) bool {
+	r, err := Compare(v1, v2)
+	if err != nil {
+		log.Println(`Error In version/compare.go#Equal`, err)
+	}
+
+	return r == resultEqual
 }
