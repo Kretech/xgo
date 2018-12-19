@@ -1,4 +1,4 @@
-package main
+package firewall
 
 type Semaphore interface {
 	// P wait()
