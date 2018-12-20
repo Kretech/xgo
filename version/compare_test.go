@@ -20,10 +20,10 @@ func TestVersionCompare(t *testing.T) {
 
 	for _, cas := range cases {
 		r, err := Compare(cas[0].(string), cas[1].(string))
-		must := r == cas[2].(int) && err == cas[3]
+		must := r == cas[2].(T) && err == cas[3]
 		// fmt.Println(must, r, err)
 		test.AssertEqual(t, must, true)
-		test.AssertEqual(t, r, cas[2].(int))
+		test.AssertEqual(t, r, cas[2].(T))
 		test.AssertEqual(t, err, cas[3])
 	}
 }

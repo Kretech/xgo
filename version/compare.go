@@ -16,11 +16,12 @@ const (
 	maxPerSection = 1<<perSectionBit - 1
 )
 
+type T = byte
+
 const (
-	// 跳过用0表示结果，避免默认值带来的影响
-	resultEqual = iota + 1
-	resultGreater
-	resultLess
+	resultEqual   T = '='
+	resultGreater T = '>'
+	resultLess    T = '<'
 )
 
 var vCache map[string]uint64
@@ -67,7 +68,7 @@ func version2Int(sVersion string) (v uint64, err error) {
 	return
 }
 
-func Compare(v1, v2 string) (result int, err error) {
+func Compare(v1, v2 string) (result T, err error) {
 	hash1, err := version2Int(v1)
 	if err != nil {
 		return
