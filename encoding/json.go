@@ -8,6 +8,8 @@ import (
 
 const (
 	OptEscapeHtml = 1 << 1
+
+	OptIndentTab = 1 << 2
 )
 
 func JsonEncode(s interface{}, opts ...int) string {
@@ -21,6 +23,9 @@ func JsonEncode(s interface{}, opts ...int) string {
 	encoder := json.NewEncoder(buffer)
 
 	encoder.SetEscapeHTML(opt&OptEscapeHtml > 0)
+	if opt&OptIndentTab > 0 {
+		encoder.SetIndent("", "\t")
+	}
 
 	err := encoder.Encode(s)
 	if err != nil {
