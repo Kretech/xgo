@@ -5,19 +5,27 @@ import (
 	"reflect"
 
 	"github.com/Kretech/xgo/encoding"
+	"github.com/fatih/color"
 )
 
 func Dump(args ...interface{}) {
 	r := DepthCompact(1, args...)
 
-	for k, v := range r {
-		vi := v
+	for k, originValue := range r {
 
-		if !IsScala(v) {
-			vi = encoding.JsonEncode(v, encoding.OptIndentTab)
+		txt := color.New(color.Italic, color.FgYellow).Sprint(k) + " => "
+
+		vi := originValue
+
+		if !IsScala(originValue) {
+			// txt += fmt.Sprint(reflect.TypeOf(originValue))
+			txt += color.New(color.FgCyan).Sprint(reflect.TypeOf(originValue))
+			vi = encoding.JsonEncode(originValue, encoding.OptIndentTab)
 		}
 
-		fmt.Printf("%v => %v\n", k, vi)
+		txt += fmt.Sprint(vi)
+
+		fmt.Println(txt)
 	}
 
 	// fmt.Println(encoding.JsonEncode(r, encoding.OptIndentTab))
@@ -31,7 +39,9 @@ func IsScala(v interface{}) bool {
 
 	switch t.Kind() {
 
-	case reflect.Map, reflect.Slice, reflect.Struct:
+	case reflect.Map,
+		reflect.Struct,
+		reflect.Slice, reflect.Array:
 		return false
 
 	default:

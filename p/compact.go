@@ -86,7 +86,13 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 						return false
 					}
 
-					currentName := fn.X.(*ast.Ident).Name + "." + fn.Sel.Name
+					// 对于多级访问比如 a.b.c()，fn.X 还是个 SelectorExpr
+					lf, ok := fn.X.(*ast.Ident)
+					if !ok {
+						return false
+					}
+
+					currentName := lf.Name + "." + fn.Sel.Name
 
 					// q.Q(shouldCallName, currentName)
 					return shouldCallName == currentName
