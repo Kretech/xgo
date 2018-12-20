@@ -2,14 +2,27 @@ package p
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 
 	"github.com/Kretech/xgo/encoding"
 	"github.com/fatih/color"
 )
 
+// Dump
 func Dump(args ...interface{}) {
-	r := DepthCompact(1, args...)
+	DepthDump(1, args...)
+}
+
+// DD means Dump and Die
+func DD(args ...interface{}) {
+	DepthDump(1, args...)
+
+	os.Exit(0)
+}
+
+func DepthDump(depth int, args ...interface{}) {
+	r := DepthCompact(depth+1, args...)
 
 	for k, originValue := range r {
 
