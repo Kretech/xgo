@@ -126,7 +126,11 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 // a,b:=1,2 Comapct(a, b) => {"a":1,"b":2}
 // 参考自 http://php.net/manual/zh/function.compact.php
 func Compact(args ...interface{}) (r map[string]interface{}) {
-	ps := varNameDepth(1, args...)
+	return DepthCompact(1, args...)
+}
+
+func DepthCompact(depth int, args ...interface{}) (r map[string]interface{}) {
+	ps := varNameDepth(depth+1, args...)
 
 	r = make(map[string]interface{}, len(ps))
 	for idx, param := range ps {
