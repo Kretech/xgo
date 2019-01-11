@@ -6,15 +6,34 @@ import (
 	"log"
 )
 
-const (
-	OptEscapeHtml = 1 << 1
+type Opt uint8
 
-	OptIndentTab = 1 << 2
+const (
+	OptEscapeHtml Opt = 1 << 1
+
+	OptIndentTab Opt = 1 << 2
 )
 
-func JsonEncode(s interface{}, opts ...int) string {
+func (opt Opt) escapeHtml() bool {
+	return opt&OptEscapeHtml > 0
+}
 
-	opt := 0
+func (opt Opt) indentTab() bool {
+	return opt&OptIndentTab > 0
+}
+
+func (opt Opt) Apply(enc *json.Encoder) {
+
+	enc.SetEscapeHTML(opt.escapeHtml())
+
+	if opt.indentTab() {
+		enc.SetIndent("", "\t")
+	}
+
+}
+
+func JsonEncode(s interface{}, opts ...Opt) string {
+	var opt Opt
 	if len(opts) > 0 {
 		opt = opts[0]
 	}
@@ -22,10 +41,7 @@ func JsonEncode(s interface{}, opts ...int) string {
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 
-	encoder.SetEscapeHTML(opt&OptEscapeHtml > 0)
-	if opt&OptIndentTab > 0 {
-		encoder.SetIndent("", "\t")
-	}
+	opt.Apply(encoder)
 
 	err := encoder.Encode(s)
 	if err != nil {
@@ -44,9 +60,9 @@ func JsonEncode(s interface{}, opts ...int) string {
 	return string(b)
 }
 
-func JsonDecode(str interface{}, ele interface{}) {
+func JsonDecode(str interface{}, ele interface{}) error {
 	if ss, ok := str.(string); ok {
 		str = []byte(ss)
 	}
-	json.Unmarshal(str.([]byte), &ele)
+	return json.Unmarshal(str.([]byte), &ele)
 }
