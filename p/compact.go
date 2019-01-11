@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"reflect"
 	"runtime"
 	"strings"
 )
@@ -79,6 +80,8 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 			}
 
 			// q.Q(call)
+
+			// 检查是不是调用 argsName 的方法
 			isArgsCall := func(expr *ast.CallExpr, shouldCallName string) bool {
 				if strings.Contains(shouldCallName, ".") {
 					fn, ok := call.Fun.(*ast.SelectorExpr)
@@ -116,8 +119,10 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 				return true
 			}
 
+			// 拼装每个参数的名字
 			for _, arg := range call.Args {
-				r = append(r, arg.(*ast.Ident).Name)
+				name := GetExprName(arg)
+				r = append(r, name)
 			}
 
 			found = true
@@ -158,4 +163,67 @@ func cacheGet(key string, backup func() interface{}) interface{} {
 	}
 
 	return v
+}
+
+//GetExprName 获取一个表达式的名字
+func GetExprName(expr ast.Expr) (name string) {
+
+	switch exp := expr.(type) {
+
+	case *ast.BasicLit:
+		name = exp.Value
+
+	case *ast.CompositeLit:
+		name = GetExprName(exp.Type) + GetExprName(exp.Elts[0])
+
+		if len(exp.Elts) > 0 {
+			elts := make([]string, 0, len(exp.Elts))
+			for _, elt := range exp.Elts {
+				elts = append(elts, GetExprName(elt))
+			}
+			name = `{` + strings.Join(elts, `,`) + `}`
+		}
+
+	case *ast.MapType:
+		name = fmt.Sprintf("map[%s]%s", GetExprName(exp.Key), GetExprName(exp.Value))
+
+	//	@todo interface 先都显示 interface{}
+	case *ast.InterfaceType:
+		name = `interface{}`
+
+	case *ast.KeyValueExpr:
+		name = GetExprName(exp.Key) + ":" + GetExprName(exp.Value)
+
+	case *ast.Ident:
+		name = exp.Name
+
+	case *ast.CallExpr:
+		switch f := exp.Fun.(type) {
+		case *ast.Ident:
+			name = f.Name
+
+		case *ast.SelectorExpr:
+			name = GetExprName(f.X) + "." + f.Sel.Name
+
+		default:
+			name = fmt.Sprintf("Unknown(%s)", reflect.TypeOf(f).Name())
+		}
+
+		name += `(`
+
+		if len(exp.Args) > 0 {
+			args := make([]string, 0, len(exp.Args))
+			for _, arg := range exp.Args {
+				args = append(args, GetExprName(arg))
+			}
+			name += strings.Join(args, `,`)
+		}
+
+		name += `)`
+
+	default:
+		name = fmt.Sprintf("Unknown(%v)", reflect.TypeOf(expr))
+	}
+
+	return
 }

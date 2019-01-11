@@ -28,20 +28,27 @@ func DepthDump(depth int, args ...interface{}) {
 
 		txt := color.New(color.Italic, color.FgYellow).Sprint(k) + " => "
 
-		vi := originValue
-
-		if !IsScala(originValue) {
-			// txt += fmt.Sprint(reflect.TypeOf(originValue))
-			txt += color.New(color.FgCyan).Sprint(reflect.TypeOf(originValue))
-			vi = encoding.JsonEncode(originValue, encoding.OptIndentTab)
-		}
-
-		txt += fmt.Sprint(vi)
+		txt += serialize(originValue)
 
 		fmt.Println(txt)
 	}
 
 	// fmt.Println(encoding.JsonEncode(r, encoding.OptIndentTab))
+}
+
+func serialize(originValue interface{}) (txt string) {
+	vi := originValue
+
+	if !IsScala(originValue) {
+		// txt += fmt.Sprint(reflect.TypeOf(originValue))
+
+		txt += color.New(color.FgCyan).Sprint(reflect.TypeOf(originValue))
+		vi = encoding.JsonEncode(originValue, encoding.OptIndentTab)
+	}
+
+	txt += fmt.Sprint(vi)
+
+	return
 }
 
 func IsScala(v interface{}) bool {
