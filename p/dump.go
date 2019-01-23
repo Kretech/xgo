@@ -52,6 +52,10 @@ func serialize(originValue interface{}) (txt string) {
 }
 
 func IsScala(v interface{}) bool {
+	if v == nil {
+		return true
+	}
+
 	t := reflect.TypeOf(v)
 	if t.Kind() == reflect.Ptr {
 		t = t.Elem()
