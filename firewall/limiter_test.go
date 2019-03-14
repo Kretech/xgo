@@ -7,7 +7,7 @@ import (
 )
 
 func TestSleepLimiter_Acquire(t *testing.T) {
-	ttl := time.Second
+	ttl := time.Second / 123
 	limit := 300
 	total := 1000
 
