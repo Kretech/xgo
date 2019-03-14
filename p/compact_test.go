@@ -67,7 +67,7 @@ func TestCompact(t *testing.T) {
 	age := 3
 	name := `zhang`
 
-	result := p.Compact(age, name)
+	_, result := p.Compact(age, name)
 	expect := map[string]Any{`age`: 3, `name`: `zhang`}
 
 	as.Equal(result, expect)

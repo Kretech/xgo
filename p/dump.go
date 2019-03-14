@@ -181,5 +181,5 @@ func IsScala(v interface{}) bool {
 }
 
 func withTab(str string) string {
-	return strings.ReplaceAll(str, "\n", "\n\t")
+	return strings.Replace(str, "\n", "\n\t", -1)
 }

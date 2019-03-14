@@ -22,7 +22,7 @@ func TestInternalCompact(t *testing.T) {
 	age := 3
 	name := `zhang`
 
-	result := Compact(age, name)
+	_, result := Compact(age, name)
 	expect := map[string]interface{}{`age`: 3, `name`: `zhang`}
 
 	as.Equal(result, expect)
