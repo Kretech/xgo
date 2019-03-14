@@ -20,12 +20,12 @@ func (this *_S) b(t string) (string) {
 
 func TestDump(t *testing.T) {
 
-	a := 1
-	b := `sf`
-	c := map[string]interface{}{"name": "z", "age": 14}
-	d := []interface{}{&c}
-
-	p.Dump(a, b, c, d)
+	aInt := 1
+	bStr := `sf`
+	cMap := map[string]interface{}{"name": "z", "age": 14}
+	dArray := []interface{}{&cMap, aInt, bStr}
+	c := cMap
+	p.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, c, cMap["name"], dArray[2], dArray[aInt])
 
 	userId := func() int { return 4 }
 	p.Dump(userId())
@@ -37,7 +37,7 @@ func TestDump(t *testing.T) {
 	p.Dump(_s.b(`t`))
 
 	p.Dump(encoding.JsonEncode(`abc`))
-	p.Dump(encoding.JsonEncode(map[string]interface{}{"a": a}))
+	p.Dump(encoding.JsonEncode(map[string]interface{}{"a": aInt}))
 }
 
 func userId2() int {

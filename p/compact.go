@@ -136,16 +136,16 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 // Compact 将多个变量打包到一个字典里
 // a,b:=1,2 Comapct(a, b) => {"a":1,"b":2}
 // 参考自 http://php.net/manual/zh/function.compact.php
-func Compact(args ...interface{}) (r map[string]interface{}) {
+func Compact(args ...interface{}) (paramNames []string, paramAndValues map[string]interface{}) {
 	return DepthCompact(1, args...)
 }
 
-func DepthCompact(depth int, args ...interface{}) (r map[string]interface{}) {
-	ps := varNameDepth(depth+1, args...)
+func DepthCompact(depth int, args ...interface{}) (paramNames []string, paramAndValues map[string]interface{}) {
+	paramNames = varNameDepth(depth+1, args...)
 
-	r = make(map[string]interface{}, len(ps))
-	for idx, param := range ps {
-		r[param] = args[idx]
+	paramAndValues = make(map[string]interface{}, len(paramNames))
+	for idx, param := range paramNames {
+		paramAndValues[param] = args[idx]
 	}
 
 	return
@@ -170,6 +170,7 @@ func GetExprName(expr ast.Expr) (name string) {
 
 	switch exp := expr.(type) {
 
+	// 字面值 literal
 	case *ast.BasicLit:
 		name = exp.Value
 
@@ -194,6 +195,7 @@ func GetExprName(expr ast.Expr) (name string) {
 	case *ast.KeyValueExpr:
 		name = GetExprName(exp.Key) + ":" + GetExprName(exp.Value)
 
+	//	a
 	case *ast.Ident:
 		name = exp.Name
 
@@ -220,6 +222,14 @@ func GetExprName(expr ast.Expr) (name string) {
 		}
 
 		name += `)`
+
+	//	&a
+	case *ast.UnaryExpr:
+		name = "&" + GetExprName(exp.X)
+
+	//	a["3"]
+	case *ast.IndexExpr:
+		name = GetExprName(exp.X) + "[" + GetExprName(exp.Index) + "]"
 
 	default:
 		name = fmt.Sprintf("Unknown(%v)", reflect.TypeOf(expr))
