@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	MaxSliceLen = 2
+	MaxSliceLen = 32
 	MaxMapLen   = 32
 
 	SepKv = " => "
