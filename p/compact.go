@@ -6,6 +6,7 @@ import (
 	"go/parser"
 	"go/token"
 	"reflect"
+	"regexp"
 	"runtime"
 	"strings"
 )
@@ -18,18 +19,37 @@ func VarName(args ...interface{}) []string {
 
 func varNameDepth(skip int, args ...interface{}) (c []string) {
 	pc, _, _, _ := runtime.Caller(skip)
-	callFunc := runtime.FuncForPC(pc)
-	ss := strings.Split(callFunc.Name(), "/")
+	userCalledFunc := runtime.FuncForPC(pc) // 用户调用 varName 的函数名
 
 	// 用户通过这个方法来获取变量名。
-	// 可能有几种写法：p.F() alias.F() .F()，我们需要解析 import 来确定
-	shouldCallName := ss[len(ss)-1]
-	shouldCallPkg := callFunc.Name()[:strings.LastIndex(callFunc.Name(), `.`)]
+	// 直接通过 package 调用可能有几种写法：p.F() alias.F() .F()，我们需要解析 import 来确定
+	shouldCalledSel := userCalledFunc.Name()[:strings.LastIndex(userCalledFunc.Name(), `.`)]
+
+	splitName := strings.Split(userCalledFunc.Name(), "/")
+	shouldCalledExpr := splitName[len(splitName)-1]
+
+	// 粗匹配 dump.(*CliDumper).Dump
+	// 针对 d:=dumper(); d.Dump() 的情况
+	if strings.Contains(shouldCalledExpr, ".(") {
+		// 简单的正则来估算是不是套了一层 struct{}
+		matched, _ := regexp.MatchString(`\w+\.(.+)\.\w+`, shouldCalledExpr)
+		if matched {
+			// 暂时不好判断前缀 d 是不是 dumper 类型，先略过
+			// 用特殊的 . 前缀表示这个 sel 不处理
+			shouldCalledSel = ""
+			shouldCalledExpr = shouldCalledExpr[strings.LastIndex(shouldCalledExpr, "."):]
+		}
+	}
+
+	//fmt.Println("userCalledFunc   =", userCalledFunc.Name())
+	//fmt.Println("shouldCalledSel  =", shouldCalledSel)
+	//fmt.Println("shouldCalledExpr =", shouldCalledExpr)
 
 	_, file, line, _ := runtime.Caller(skip + 1)
+	//fmt.Printf("%v:%v\n", file, line)
 
 	// todo 一行多次调用时，还需根据 runtime 找到 column 一起定位
-	cacheKey := fmt.Sprintf("%s:%d@%s", file, line, shouldCallName)
+	cacheKey := fmt.Sprintf("%s:%d@%s", file, line, shouldCalledExpr)
 	return cacheGet(cacheKey, func() interface{} {
 
 		r := []string{}
@@ -52,20 +72,16 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 					continue
 				}
 
-				if is.Name != nil && strings.Trim(is.Path.Value, `""`) == shouldCallPkg {
-					aliasImport[is.Name.Name] = shouldCallPkg
-					shouldCallName = is.Name.Name + "." + strings.Split(shouldCallName, ".")[1]
+				if is.Name != nil && strings.Trim(is.Path.Value, `""`) == shouldCalledSel {
+					aliasImport[is.Name.Name] = shouldCalledSel
+					shouldCalledExpr = is.Name.Name + "." + strings.Split(shouldCalledExpr, ".")[1]
 
-					shouldCallName = strings.TrimLeft(shouldCallName, `.`)
+					shouldCalledExpr = strings.TrimLeft(shouldCalledExpr, `.`)
 				}
 			}
 		}
 
-		// q.Q(shouldCallName, shouldCallPkg, aliasImport)
-
-		// q.Q(f)
-		// q.Q(f.Decls[1].(*ast.FuncDecl).Body.List[1].(*ast.ExprStmt).X.(*ast.CallExpr).Args[0].(*ast.CallExpr).Args[0].(*ast.Ident).Obj)
-		ast.Inspect(f, func(node ast.Node) bool {
+		ast.Inspect(f, func(node ast.Node) (goon bool) {
 			if found {
 				return false
 			}
@@ -79,10 +95,17 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 				return true
 			}
 
-			// q.Q(call)
-
 			// 检查是不是调用 argsName 的方法
-			isArgsCall := func(expr *ast.CallExpr, shouldCallName string) bool {
+			isArgsNameFunc := func(expr *ast.CallExpr, shouldCallName string) bool {
+
+				var equalCall = func(shouldCallName, currentName string) bool {
+					if shouldCallName[0] == '.' {
+						return strings.HasSuffix(currentName, shouldCallName)
+					}
+
+					return shouldCallName == currentName
+				}
+
 				if strings.Contains(shouldCallName, ".") {
 					fn, ok := call.Fun.(*ast.SelectorExpr)
 					if !ok {
@@ -97,8 +120,7 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 
 					currentName := lf.Name + "." + fn.Sel.Name
 
-					// q.Q(shouldCallName, currentName)
-					return shouldCallName == currentName
+					return equalCall(shouldCallName, currentName)
 				} else {
 					fn, ok := call.Fun.(*ast.Ident)
 					if !ok {
@@ -107,15 +129,13 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 
 					return fn.Name == shouldCallName
 				}
-
-				return false
-			}
-
-			if !isArgsCall(call, shouldCallName) {
-				return true
 			}
 
 			if fset.Position(call.End()).Line != line {
+				return true
+			}
+
+			if !isArgsNameFunc(call, shouldCalledExpr) {
 				return true
 			}
 
