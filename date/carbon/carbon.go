@@ -85,6 +85,9 @@ func (c Carbon) Sub(d time.Duration) *Carbon {
 	return &c
 }
 
+// Format 格式化代码
+// c.Format("Y-m-d H:i:s")
+// @see http://php.net/manual/zh/function.date.php#refsect1-function.date-parameters
 func (c *Carbon) Format(format string) string {
 	format = date.ToGoFormat(format)
 	return c.t.Format(format)
