@@ -13,7 +13,7 @@ func CamelCase(v string) string {
 		if v[i] != '_' {
 			buf.WriteByte(v[i])
 		} else {
-			i ++
+			i++
 			if i > length {
 				continue
 			}

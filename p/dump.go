@@ -19,6 +19,9 @@ var (
 	SepKv = " => "
 
 	Out io.Writer = os.Stdout
+
+	//
+	StringQuota = `"`
 )
 
 // Dump
@@ -68,7 +71,7 @@ func serialize(originValue interface{}) (txt string) {
 	// 基础类型
 	switch rT.Kind() {
 	case reflect.String:
-		result = fmt.Sprintf(`"%v"`, rV.Interface())
+		result = fmt.Sprintf(`%s%v%s`, StringQuota, rV.Interface(), StringQuota)
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,

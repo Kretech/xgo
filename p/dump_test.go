@@ -10,11 +10,11 @@ import (
 type _S struct {
 }
 
-func (this *_S) a() (string) {
+func (this *_S) a() string {
 	return `_s.a`
 }
 
-func (this *_S) b(t string) (string) {
+func (this *_S) b(t string) string {
 	return `_s.b(` + t + `)`
 }
 

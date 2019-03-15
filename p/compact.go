@@ -174,6 +174,10 @@ func GetExprName(expr ast.Expr) (name string) {
 	case *ast.BasicLit:
 		name = exp.Value
 
+		// a.b
+	case *ast.SelectorExpr:
+		name = GetExprName(exp.X) + "." + exp.Sel.Name
+
 	case *ast.CompositeLit:
 		name = GetExprName(exp.Type) + GetExprName(exp.Elts[0])
 
@@ -200,16 +204,7 @@ func GetExprName(expr ast.Expr) (name string) {
 		name = exp.Name
 
 	case *ast.CallExpr:
-		switch f := exp.Fun.(type) {
-		case *ast.Ident:
-			name = f.Name
-
-		case *ast.SelectorExpr:
-			name = GetExprName(f.X) + "." + f.Sel.Name
-
-		default:
-			name = fmt.Sprintf("Unknown(%s)", reflect.TypeOf(f).Name())
-		}
+		name = GetExprName(exp.Fun)
 
 		name += `(`
 
