@@ -26,15 +26,15 @@ func TestArray_KeyBy(t *testing.T) {
 
 	test.AssertEqual(t, a1.String(), `&{3 zhang <nil>} &{5 wang <nil>} &{4 li <nil>} &{6 zhao <nil>}`)
 
-	//d1 := a1.KeyBy("Id")
+	// d1 := a1.KeyBy("Id")
 	v := getStructField(reflect.ValueOf(peoples[0]).Elem(), "Id")
 	fmt.Println(v)
 
-	//fmt.Println(d1)
-	//fmt.Println(d1.Data())
-	//fmt.Println(encoding.JsonEncode(d1.Data()))
+	// fmt.Println(d1)
+	// fmt.Println(d1.Data())
+	// fmt.Println(encoding.JsonEncode(d1.Data()))
 
-	//a2 := Slice(peoples)
-	//fmt.Println(a2)
+	// a2 := Slice(peoples)
+	// fmt.Println(a2)
 
 }
