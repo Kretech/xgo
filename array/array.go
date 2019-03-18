@@ -7,10 +7,9 @@ import (
 	"reflect"
 
 	"github.com/Kretech/xgo/dict"
-	"github.com/Kretech/xgo/short"
 )
 
-type any = short.Any
+type any = interface{}
 
 // Stream 提供对一组数据集的操作，接口 api 参考自 Laravel 的 Collection 和 Java 的 stream
 type Array struct {

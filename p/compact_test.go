@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/Kretech/xgo/p"
-	. "github.com/Kretech/xgo/short"
 	"github.com/Kretech/xgo/test"
 )
 
@@ -68,7 +67,7 @@ func TestCompact(t *testing.T) {
 	name := `zhang`
 
 	_, result := p.Compact(age, name)
-	expect := map[string]Any{`age`: 3, `name`: `zhang`}
+	expect := map[string]interface{}{`age`: 3, `name`: `zhang`}
 
 	as.Equal(result, expect)
 }
