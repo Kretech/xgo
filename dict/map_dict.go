@@ -18,6 +18,10 @@ type MapDict struct {
 	data map[string]interface{}
 }
 
+func (m *MapDict) ToMap() map[string]interface{} {
+	panic("implement me")
+}
+
 func (d *MapDict) String() string {
 	return ""
 }
