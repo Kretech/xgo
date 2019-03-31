@@ -1,6 +1,10 @@
 package version
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/Kretech/xgo/test"
+)
 
 func TestSemVer_String(t *testing.T) {
 	type fields struct {
@@ -26,4 +30,14 @@ func TestSemVer_String(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSemVer_Next(t *testing.T) {
+	as := test.A(t)
+
+	v := Parse(`1.2.3`)
+
+	as.Equal(v.NextMajor().NumberString(), `2.0.0`)
+	as.Equal(v.NextMinor().NumberString(), `1.3.0`)
+	as.Equal(v.NextPatch().NumberString(), `1.2.4`)
 }
