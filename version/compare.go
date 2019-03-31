@@ -34,8 +34,7 @@ func init() {
 // 支持范围：4段4位数，(0.0.0.0, 9999.9999.9999.9999]
 func version2Int(sVersion string) (v uint64, err error) {
 
-	sVersion = strings.TrimLeft(sVersion, "Vv")
-	sVersion = strings.Replace(sVersion, "-", ".", -1)
+	sVersion = escape(sVersion)
 
 	v = vCache[sVersion]
 	if v > 0 {
