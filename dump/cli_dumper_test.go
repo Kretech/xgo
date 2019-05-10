@@ -30,6 +30,12 @@ func TestCliDumper_Dump(t *testing.T) {
 	//dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 	c.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 
+	var err error
+	var emptyInterface interface{}
+	var emptyMap map[string]interface{}
+	var emptySlice []interface{}
+	c.Dump(err, emptyInterface, emptyMap, emptySlice)
+
 	userId := func() int { return 4 }
 	c.Dump(userId())
 

@@ -20,6 +20,10 @@ var (
 )
 
 func Serialize(originValue interface{}) (txt string) {
+	if originValue == nil {
+		return "<nil>"
+	}
+
 	result := originValue
 
 	rT := reflect.TypeOf(originValue)
