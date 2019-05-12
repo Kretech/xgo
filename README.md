@@ -9,11 +9,11 @@ Go Components
 - [digo](https://github.com/Kretech/xgo/tree/master/digo) 依赖注入容器
 - [dumper](https://github.com/Kretech/xgo/tree/master/p) 靠 ast/parse 解析变量名的 Dump 工具类
 - [firewall](https://github.com/Kretech/xgo/tree/master/firewall) 频率限制工具类
-- [random](https://github.com/Kretech/xgo/tree/master/random) math/rand 的一层壳，随机 Source
 - [version](https://github.com/Kretech/xgo/tree/master/version) 高效版本比较库
 - [String](https://github.com/Kretech/xgo/blob/master/string/string.go) 支持链式操作的 String 类
 - [astutil](https://github.com/Kretech/xgo/tree/master/astutil) 自己常用的 ast 功能
 - [gotemplate](https://github.com/Kretech/xgo/tree/master/gotemplate) 自己常用的 template 函数
+- [random](https://github.com/Kretech/xgo/tree/master/random) math/rand 的一层壳，随机 Source
 
 ## todo
 
