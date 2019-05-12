@@ -34,7 +34,7 @@ func TestCliDumper_Dump(t *testing.T) {
 	var emptyInterface interface{}
 	var emptyMap map[string]interface{}
 	var emptySlice []interface{}
-	c.Dump(err, emptyInterface, emptyMap, emptySlice)
+	c.Dump(err, emptyInterface, emptyMap, emptySlice, nil)
 
 	userId := func() int { return 4 }
 	c.Dump(userId())
@@ -47,6 +47,9 @@ func TestCliDumper_Dump(t *testing.T) {
 
 	c.Dump(encoding.JsonEncode(`abc`))
 	c.Dump(encoding.JsonEncode(map[string]interface{}{"a": aInt}))
+
+	ch := make(chan bool)
+	c.Dump(ch)
 
 	buf := &bytes.Buffer{}
 	c = dump.NewCliDumper(dump.OptOut(buf))
