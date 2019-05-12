@@ -12,7 +12,8 @@ Go Components
 - [random](https://github.com/Kretech/xgo/tree/master/random) math/rand 的一层壳，随机 Source
 - [version](https://github.com/Kretech/xgo/tree/master/version) 高效版本比较库
 - [String](https://github.com/Kretech/xgo/blob/master/string/string.go) 支持链式操作的 String 类
-
+- [astutil][https://github.com/Kretech/xgo/tree/master/astutil) 自己常用的 ast 功能
+- [gotemplate][https://github.com/Kretech/xgo/tree/master/gotemplate) 自己常用的 template 函数
 
 ## todo
 
