@@ -5,10 +5,11 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
-	"reflect"
 	"regexp"
 	"runtime"
 	"strings"
+
+	"github.com/Kretech/xgo/astutil"
 )
 
 // VarName 用来获取变量的名字
@@ -187,68 +188,5 @@ func cacheGet(key string, backup func() interface{}) interface{} {
 
 //GetExprName 获取一个表达式的名字
 func GetExprName(expr ast.Expr) (name string) {
-
-	switch exp := expr.(type) {
-
-	// 字面值 literal
-	case *ast.BasicLit:
-		name = exp.Value
-
-		// a.b
-	case *ast.SelectorExpr:
-		name = GetExprName(exp.X) + "." + exp.Sel.Name
-
-	case *ast.CompositeLit:
-		name = GetExprName(exp.Type) + GetExprName(exp.Elts[0])
-
-		if len(exp.Elts) > 0 {
-			elts := make([]string, 0, len(exp.Elts))
-			for _, elt := range exp.Elts {
-				elts = append(elts, GetExprName(elt))
-			}
-			name = `{` + strings.Join(elts, `,`) + `}`
-		}
-
-	case *ast.MapType:
-		name = fmt.Sprintf("map[%s]%s", GetExprName(exp.Key), GetExprName(exp.Value))
-
-	//	@todo interface 先都显示 interface{}
-	case *ast.InterfaceType:
-		name = `interface{}`
-
-	case *ast.KeyValueExpr:
-		name = GetExprName(exp.Key) + ":" + GetExprName(exp.Value)
-
-	//	a
-	case *ast.Ident:
-		name = exp.Name
-
-	case *ast.CallExpr:
-		name = GetExprName(exp.Fun)
-
-		name += `(`
-
-		if len(exp.Args) > 0 {
-			args := make([]string, 0, len(exp.Args))
-			for _, arg := range exp.Args {
-				args = append(args, GetExprName(arg))
-			}
-			name += strings.Join(args, `,`)
-		}
-
-		name += `)`
-
-	//	&a
-	case *ast.UnaryExpr:
-		name = "&" + GetExprName(exp.X)
-
-	//	a["3"]
-	case *ast.IndexExpr:
-		name = GetExprName(exp.X) + "[" + GetExprName(exp.Index) + "]"
-
-	default:
-		name = fmt.Sprintf("Unknown(%v)", reflect.TypeOf(expr))
-	}
-
-	return
+	return astutil.ExprString(expr)
 }
