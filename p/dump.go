@@ -24,7 +24,8 @@ var (
 	StringQuota = `"`
 )
 
-// Dump
+// Deprecated
+// use dump.Dump
 func Dump(args ...interface{}) {
 	DepthDump(1, args...)
 }

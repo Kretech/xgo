@@ -31,6 +31,15 @@ func IsScalar(v interface{}) bool {
 	}
 }
 
+func hasLen(k reflect.Kind) bool {
+	switch k {
+	case reflect.Array, reflect.Slice, reflect.Map, reflect.Chan:
+		return true
+	default:
+		return false
+	}
+}
+
 func withTab(str string) string {
 	return strings.Replace(str, "\n", "\n\t", -1)
 }

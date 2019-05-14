@@ -23,18 +23,45 @@ func (this *_S) b(t string) string {
 func TestCliDumper_Dump(t *testing.T) {
 	c := dump.NewCliDumper()
 
-	aInt := 1
-	bStr := `sf`
-	cMap := map[string]interface{}{"name": "z", "age": 14}
-	dArray := []interface{}{&cMap, aInt, bStr}
-	//dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
-	c.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
+	t.Run(`base`, func(t *testing.T) {
+		aInt := 1
+		bStr := `sf`
+		cMap := map[string]interface{}{"name": "z", "age": 14}
+		dArray := []interface{}{&cMap, aInt, bStr}
+		//dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
+		c.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
+	})
 
-	var err error
-	var emptyInterface interface{}
-	var emptyMap map[string]interface{}
-	var emptySlice []interface{}
-	c.Dump(err, emptyInterface, emptyMap, emptySlice, nil)
+	t.Run(`interface`, func(t *testing.T) {
+		var err error
+		var emptyInterface interface{}
+		var emptyMap map[string]interface{}
+		var emptySlice []interface{}
+		c.Dump(err, emptyInterface, emptyMap, emptySlice, nil)
+	})
+
+	t.Run(`struct`, func(t *testing.T) {
+		type Car struct {
+			Speed int
+			Owner interface{}
+		}
+
+		type Person struct {
+			Name      string
+			Age       int
+			Interests []string
+
+			Friends [4]*Person
+
+			Cars []*Car
+		}
+
+		p1 := Person{Name: "lisan", Interests: []string{"a", "b"}, Cars: []*Car{{Speed: 120}}}
+		p2 := &p1
+
+		c.Dump(p2)
+
+	})
 
 	userId := func() int { return 4 }
 	c.Dump(userId())
@@ -45,8 +72,10 @@ func TestCliDumper_Dump(t *testing.T) {
 	c.Dump(_s.a())
 	c.Dump(_s.b(`t`))
 
+	num3 := 3
+	c.Dump(`abc`)
 	c.Dump(encoding.JsonEncode(`abc`))
-	c.Dump(encoding.JsonEncode(map[string]interface{}{"a": aInt}))
+	c.Dump(encoding.JsonEncode(map[string]interface{}{"a": num3}))
 
 	ch := make(chan bool)
 	c.Dump(ch)
