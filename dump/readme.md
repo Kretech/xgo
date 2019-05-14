@@ -38,7 +38,7 @@ dump.NewCliDumper(dump.OptOut(buf))
 
 ```go
 // 全局禁用
-// 可以在生产环境该功能避免意外
+// 可以在生产环境使用该选项避免意外
 dump.Disable = true
 
 // 显示代码位置
