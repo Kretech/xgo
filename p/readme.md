@@ -1,4 +1,4 @@
-# xgo/p
+# *XGo*/p
 
 Tricking implements for php runtime functions
 
