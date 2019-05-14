@@ -2,7 +2,7 @@
 
 
 
-## Quick Start
+## Quick Look
 
 ```go
 aInt := 1
@@ -30,9 +30,27 @@ c.Dump(a)
 // 自定义 out
 buf := &bytes.Buffer{}
 dump.NewCliDumper(dump.OptOut(buf))
+```
 
-// 可以在生产环境全局禁用该功能
+## Option
+
+自定义选项
+
+```go
+// 全局禁用
+// 可以在生产环境该功能避免意外
 dump.Disable = true
+
+// 显示代码位置
+dump.ShowFileLine1 = true
+dump.MarginLine1   = 36     // 显示行号时，前面可以加空格
+
+// 自定义输出
+dump.DefaultWriter = os.Stdout
+
+// 数组最多显示多少个，其余的会省略为“...”
+dump.MaxSliceLen = 32
+dump.MaxMapLen   = 32
 ```
 
 ## More TestCases
