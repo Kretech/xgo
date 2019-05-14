@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/Kretech/xgo/p"
@@ -16,6 +17,10 @@ type CliDumper struct {
 
 var (
 	DefaultWriter io.Writer = os.Stdout
+
+	// 显示对应代码位置
+	ShowFileLine1 = false
+	MarginLine1   = 36
 )
 
 var _ Dumper = NewCliDumper()
@@ -60,6 +65,22 @@ func (c *CliDumper) DepthDump(depth int, args ...interface{}) {
 
 		txt += Serialize(compacted[name])
 
+		if ShowFileLine1 {
+			txt = c.showLine(depth+1, txt)
+		}
+
 		_, _ = fmt.Fprintln(c.out, txt)
 	}
+}
+func (c *CliDumper) showLine(depth int, t string) string {
+	lines := strings.Split(t, "\n")
+	if len(lines) < 1 {
+		return t
+	}
+
+	_, file, line, _ := runtime.Caller(depth + 1)
+	lines[0] = fmt.Sprintf("%-"+fmt.Sprint(MarginLine1)+"s", lines[0])
+	lines[0] += color.New().Sprintf("%s:%d", file, line)
+
+	return strings.Join(lines, "\n")
 }
