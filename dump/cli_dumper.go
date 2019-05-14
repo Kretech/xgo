@@ -51,6 +51,11 @@ func (c *CliDumper) Dump(args ...interface{}) {
 }
 
 func (c *CliDumper) DepthDump(depth int, args ...interface{}) {
+
+	if Disable {
+		return
+	}
+
 	names, compacted := p.DepthCompact(depth+1, args...)
 
 	for _, name := range names {

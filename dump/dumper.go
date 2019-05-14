@@ -1,5 +1,11 @@
 package dump
 
+var (
+	// disable dump in global scope
+	// use it in production
+	Disable = false
+)
+
 type Dumper interface {
 	Dump(args ...interface{})
 	DepthDump(depth int, args ...interface{})
