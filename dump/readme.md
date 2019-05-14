@@ -31,7 +31,7 @@ c.Dump(a)
 buf := &bytes.Buffer{}
 dump.NewCliDumper(dump.OptOut(buf))
 
-// 可以在生成环境全局禁用该功能
+// 可以在生产环境全局禁用该功能
 dump.Disable = true
 ```
 
