@@ -7,7 +7,7 @@ Go Components
 ## Release
 
 - [digo](https://github.com/Kretech/xgo/tree/master/digo) 依赖注入容器
-- [dumper](https://github.com/Kretech/xgo/tree/master/p) 靠 ast/parse 解析变量名的 Dump 工具类
+- [dumper](https://github.com/Kretech/xgo/tree/master/dump) 靠 ast/parse 解析变量名的 Dump 工具类
 - [firewall](https://github.com/Kretech/xgo/tree/master/firewall) 频率限制工具类
 - [version](https://github.com/Kretech/xgo/tree/master/version) 高效版本比较库
 - [String](https://github.com/Kretech/xgo/blob/master/string/string.go) 支持链式操作的 String 类
