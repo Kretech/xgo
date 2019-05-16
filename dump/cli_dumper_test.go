@@ -54,9 +54,15 @@ func TestCliDumper_Dump(t *testing.T) {
 			friends [4]*Person
 
 			Cars []*car
+
+			action []func() string
 		}
 
-		p1 := Person{Name: "lisan", age: 19, Interests: []string{"a", "b"}, Cars: []*car{{Speed: 120}}}
+		p1 := Person{Name: "lisan", age: 19, Interests: []string{"a", "b"}, Cars: []*car{{Speed: 120}},
+			action: []func() string{
+				func() string { return "sayHi" },
+				func() string { return "sayBay" },
+			}}
 		p2 := &p1
 
 		c.Dump(p2)

@@ -26,6 +26,9 @@ func IsScalar(v interface{}) bool {
 	case reflect.Chan:
 		return false
 
+	case reflect.Func:
+		return false
+
 	default:
 		return true
 	}

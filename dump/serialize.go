@@ -20,7 +20,7 @@ var (
 	StringQuota = `"`
 )
 
-func Serialize(originValue interface{}) (txt string) {
+func Serialize(originValue interface{}) (serialized string) {
 	if originValue == nil {
 		return "<nil>"
 	}
@@ -57,112 +57,119 @@ func Serialize(originValue interface{}) (txt string) {
 		result = fmt.Sprint(V.Interface())
 	}
 
-	if isPtr {
-		txt += color.New(color.FgMagenta).Sprint("*")
+	if IsScalar(originValue) {
+		serialized = fmt.Sprint(result)
+		return
 	}
 
-	if !IsScalar(originValue) {
-		// txt += fmt.Sprint(reflect.TypeOf(originValue))
+	if isPtr {
+		serialized += color.New(color.FgMagenta).Sprint("*")
+	}
 
-		rTName := strings.Replace(T.String(), " ", "", 1)
-		head := color.New(color.FgGreen).Sprint(rTName) + " "
+	rTName := strings.Replace(T.String(), " ", "", 1)
+	head := color.New(color.FgGreen).Sprint(rTName) + " "
 
-		func() {
-			defer func() {
-				recover()
-			}()
-
-			if hasLen(T.Kind()) {
-				head += "("
-				head += fmt.Sprintf("len=%v", color.New(color.FgYellow).Sprint(V.Len()))
-				//txt += fmt.Sprintf("cap=%v ", color.New(color.FgGreen).Sprint(reflect.ValueOf(originValue).Cap()))
-				head += ") "
-			}
+	func() {
+		defer func() {
+			recover()
 		}()
 
-		// 恶心。。
-		txt += head
-
-		// ...
-
-		switch T.Kind() {
-		case reflect.Array, reflect.Slice:
-
-			buf := bytes.Buffer{}
-			buf.WriteString("[")
-			for i := 0; i < V.Len(); i++ {
-				v := V.Index(i).Interface()
-				buf.WriteByte('\n')
-				buf.WriteString(fmt.Sprintf("%d%s", i, SepKv))
-				buf.WriteString(Serialize(v))
-
-				if i+1 >= MaxSliceLen {
-					buf.WriteString(fmt.Sprintf("\n...\nother %d items...\n", V.Len()-MaxSliceLen))
-					break
-				}
-			}
-
-			body := withTab(buf.String())
-
-			body += "\n]"
-
-			result = body
-
-		case reflect.Map:
-
-			buf := bytes.Buffer{}
-			buf.WriteString("{")
-			for i, key := range V.MapKeys() {
-				v := V.MapIndex(key).Interface()
-				buf.WriteByte('\n')
-				buf.WriteString(Serialize(key.Interface()))
-				buf.WriteString(SepKv)
-				buf.WriteString(Serialize(v))
-
-				if i+1 >= MaxMapLen {
-					break
-				}
-			}
-
-			body := withTab(buf.String())
-
-			body += "\n}"
-
-			result = body
-
-		case reflect.Struct:
-			buf := bytes.Buffer{}
-			buf.WriteString("{")
-			for i := 0; i < V.NumField(); i++ {
-				field := V.Field(i)
-				fieldT := V.Type().Field(i)
-				buf.WriteByte('\n')
-				buf.WriteString(fieldT.Name)
-				buf.WriteString(": ")
-				if field.CanInterface() {
-					buf.WriteString(Serialize(field.Interface()))
-				} else {
-					newValue := reflect.NewAt(fieldT.Type, unsafe.Pointer(field.UnsafeAddr())).Elem()
-					buf.WriteString(Serialize(newValue.Interface()))
-				}
-
-				if i+1 >= MaxMapLen {
-					break
-				}
-			}
-
-			body := withTab(buf.String())
-
-			body += "\n}"
-
-			result = body
-
-		default:
-			result = encoding.JsonEncode(originValue, encoding.OptIndentTab)
+		if hasLen(T.Kind()) {
+			head += "("
+			head += fmt.Sprintf("len=%v", color.New(color.FgYellow).Sprint(V.Len()))
+			//txt += fmt.Sprintf("cap=%v ", color.New(color.FgGreen).Sprint(reflect.ValueOf(originValue).Cap()))
+			head += ") "
 		}
+	}()
+
+	// 恶心。。
+	serialized += head
+
+	// ...
+
+	switch T.Kind() {
+	case reflect.Array, reflect.Slice:
+
+		buf := bytes.Buffer{}
+		buf.WriteString("[")
+		for i := 0; i < V.Len(); i++ {
+			v := V.Index(i).Interface()
+			buf.WriteByte('\n')
+			buf.WriteString(fmt.Sprintf("%d%s", i, SepKv))
+			buf.WriteString(Serialize(v))
+
+			if i+1 >= MaxSliceLen {
+				buf.WriteString(fmt.Sprintf("\n...\nother %d items...\n", V.Len()-MaxSliceLen))
+				break
+			}
+		}
+
+		body := withTab(buf.String())
+
+		body += "\n]"
+
+		result = body
+
+	case reflect.Map:
+
+		buf := bytes.Buffer{}
+		buf.WriteString("{")
+		for i, key := range V.MapKeys() {
+			v := V.MapIndex(key).Interface()
+			buf.WriteByte('\n')
+			buf.WriteString(Serialize(key.Interface()))
+			buf.WriteString(SepKv)
+			buf.WriteString(Serialize(v))
+
+			if i+1 >= MaxMapLen {
+				break
+			}
+		}
+
+		body := withTab(buf.String())
+
+		body += "\n}"
+
+		result = body
+
+	case reflect.Struct:
+		buf := bytes.Buffer{}
+		buf.WriteString("{")
+		for i := 0; i < V.NumField(); i++ {
+			field := V.Field(i)
+			fieldT := V.Type().Field(i)
+			buf.WriteByte('\n')
+			buf.WriteString(fieldT.Name)
+			buf.WriteString(": ")
+			if field.CanInterface() {
+				buf.WriteString(Serialize(field.Interface()))
+			} else {
+				newValue := reflect.NewAt(fieldT.Type, unsafe.Pointer(field.UnsafeAddr())).Elem()
+				buf.WriteString(Serialize(newValue.Interface()))
+			}
+
+			if i+1 >= MaxMapLen {
+				break
+			}
+		}
+
+		body := withTab(buf.String())
+
+		body += "\n}"
+
+		result = body
+
+	case reflect.Func:
+		result = fmt.Sprintf("{ &%v }", originValue)
+
+	case reflect.Chan:
+		result = fmt.Sprintf("{...}")
+
+	default:
+		result = fmt.Sprintf("(%T)", originValue) + encoding.JsonEncode(originValue, encoding.OptIndentTab)
 	}
 
-	txt += fmt.Sprint(result)
+	serialized += fmt.Sprint(result)
 
 	return
 }
