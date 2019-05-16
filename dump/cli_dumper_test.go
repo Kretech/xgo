@@ -41,22 +41,22 @@ func TestCliDumper_Dump(t *testing.T) {
 	})
 
 	t.Run(`struct`, func(t *testing.T) {
-		type Car struct {
+		type car struct {
 			Speed int
 			Owner interface{}
 		}
 
 		type Person struct {
 			Name      string
-			Age       int
+			age       int
 			Interests []string
 
-			Friends [4]*Person
+			friends [4]*Person
 
-			Cars []*Car
+			Cars []*car
 		}
 
-		p1 := Person{Name: "lisan", Interests: []string{"a", "b"}, Cars: []*Car{{Speed: 120}}}
+		p1 := Person{Name: "lisan", age: 19, Interests: []string{"a", "b"}, Cars: []*car{{Speed: 120}}}
 		p2 := &p1
 
 		c.Dump(p2)

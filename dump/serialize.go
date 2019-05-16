@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"unsafe"
 
 	"github.com/Kretech/xgo/encoding"
 	"github.com/fatih/color"
@@ -138,7 +139,12 @@ func Serialize(originValue interface{}) (txt string) {
 				buf.WriteByte('\n')
 				buf.WriteString(fieldT.Name)
 				buf.WriteString(": ")
-				buf.WriteString(Serialize(field.Interface()))
+				if field.CanInterface() {
+					buf.WriteString(Serialize(field.Interface()))
+				} else {
+					newValue := reflect.NewAt(fieldT.Type, unsafe.Pointer(field.UnsafeAddr())).Elem()
+					buf.WriteString(Serialize(newValue.Interface()))
+				}
 
 				if i+1 >= MaxMapLen {
 					break
