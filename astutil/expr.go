@@ -72,6 +72,9 @@ func ExprString(expr ast.Expr) (name string) {
 	case *ast.IndexExpr:
 		name = ExprString(exp.X) + "[" + ExprString(exp.Index) + "]"
 
+	case *ast.BinaryExpr:
+		name = ExprString(exp.X) + exp.Op.String() + ExprString(exp.Y)
+
 	case nil:
 		return ""
 

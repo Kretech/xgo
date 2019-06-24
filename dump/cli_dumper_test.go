@@ -32,6 +32,15 @@ func TestCliDumper_Dump(t *testing.T) {
 		c.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 	})
 
+	t.Run(`operator`, func(t *testing.T) {
+		a := 0.1
+		b := 0.2
+		cc := 0.3
+		c.Dump(a+b == cc)
+		c.Dump(a+b > cc)
+		c.Dump(a+b < cc)
+	})
+
 	t.Run(`interface`, func(t *testing.T) {
 		var err error
 		var emptyInterface interface{}
