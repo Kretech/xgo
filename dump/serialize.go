@@ -20,15 +20,28 @@ var (
 	StringQuota = `"`
 )
 
+const (
+	Zero = `<zero>`
+	Nil  = "<nil>"
+)
+
 func Serialize(originValue interface{}) (serialized string) {
 	if originValue == nil {
-		return "<nil>"
+		return Nil
 	}
 
 	result := originValue
 
-	T := reflect.TypeOf(originValue)
-	V := reflect.ValueOf(originValue)
+	var V reflect.Value
+
+	switch v := originValue.(type) {
+	case reflect.Value:
+		V = v
+	default:
+		V = reflect.ValueOf(originValue)
+	}
+
+	T := V.Type()
 	isPtr := false
 
 	if T.Kind() == reflect.Ptr {
@@ -38,18 +51,23 @@ func Serialize(originValue interface{}) (serialized string) {
 	}
 
 	if !V.IsValid() {
-		return "<zeroValue>"
+		return Zero
 	}
 
 	// 基础类型
 	switch T.Kind() {
 	case reflect.String:
+		typeAlias := ""
 		quota := StringQuota
-		s := V.Interface().(string)
-		if strings.Contains(s, `"`) {
+		s, ok := V.Interface().(string)
+		if !ok {
+			typeAlias = fmt.Sprintf("(%T)", V.Interface())
+		}
+
+		if strings.Contains(s, StringQuota) {
 			quota = "`"
 		}
-		result = fmt.Sprintf(`%s%v%s`, quota, s, quota)
+		result = fmt.Sprintf(`%s%s%v%s`, typeAlias, quota, s, quota)
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
@@ -92,11 +110,18 @@ func Serialize(originValue interface{}) (serialized string) {
 
 		buf := bytes.Buffer{}
 		buf.WriteString("[")
+		notEmpty := false
 		for i := 0; i < V.Len(); i++ {
-			v := V.Index(i).Interface()
-			buf.WriteByte('\n')
-			buf.WriteString(fmt.Sprintf("%d%s", i, SepKv))
-			buf.WriteString(Serialize(v))
+			v := V.Index(i)
+			vi := v.Interface()
+			vs := Serialize(vi)
+			if vs != Zero {
+				buf.WriteByte('\n')
+				buf.WriteString(fmt.Sprintf("%d%s", i, SepKv))
+				buf.WriteString(vs)
+
+				notEmpty = true
+			}
 
 			if i+1 >= MaxSliceLen {
 				buf.WriteString(fmt.Sprintf("\n...\nother %d items...\n", V.Len()-MaxSliceLen))
@@ -104,9 +129,11 @@ func Serialize(originValue interface{}) (serialized string) {
 			}
 		}
 
-		body := withTab(buf.String())
-
-		body += "\n]"
+		body := buf.String()
+		if notEmpty {
+			body = withTab(body) + "\n"
+		}
+		body += "]"
 
 		result = body
 
@@ -141,11 +168,14 @@ func Serialize(originValue interface{}) (serialized string) {
 			buf.WriteByte('\n')
 			buf.WriteString(fieldT.Name)
 			buf.WriteString(": ")
+
 			if field.CanInterface() {
 				buf.WriteString(Serialize(field.Interface()))
-			} else {
+			} else if field.CanAddr() {
 				newValue := reflect.NewAt(fieldT.Type, unsafe.Pointer(field.UnsafeAddr())).Elem()
 				buf.WriteString(Serialize(newValue.Interface()))
+			} else {
+				buf.WriteString("unaddressable")
 			}
 
 			if i+1 >= MaxMapLen {

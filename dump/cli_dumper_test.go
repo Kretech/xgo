@@ -51,13 +51,20 @@ func TestCliDumper_Dump(t *testing.T) {
 	})
 
 	t.Run(`struct`, func(t *testing.T) {
+		dump.ShowFileLine1 = true
+		defer func() {
+			dump.ShowFileLine1 = false
+		}()
+
+		type String string
+
 		type car struct {
 			Speed int
 			Owner interface{}
 		}
 
 		type Person struct {
-			Name      string
+			Name      String
 			age       int
 			Interests []string
 
@@ -77,6 +84,20 @@ func TestCliDumper_Dump(t *testing.T) {
 
 		c.Dump(p2)
 
+		type Person2 Person
+		p3 := Person2(p1)
+		c.Dump(p3)
+
+		type Person3 = Person2
+		p4 := Person3(p1)
+		c.Dump(p4)
+
+		type Person4 struct {
+			Person Person
+			Person2
+		}
+		p5 := Person4{p1, p4}
+		c.Dump(p5)
 	})
 
 	userId := func() int { return 4 }
