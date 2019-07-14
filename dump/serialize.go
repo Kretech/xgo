@@ -4,11 +4,19 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 	"unsafe"
 
 	"github.com/Kretech/xgo/encoding"
 	"github.com/fatih/color"
+)
+
+var (
+	// uint8(97) => 'a'
+	OptShowUint8AsByte = false
+
+	OptSortMapKeys = true
 )
 
 var (
@@ -57,21 +65,18 @@ func Serialize(originValue interface{}) (serialized string) {
 	// 基础类型
 	switch T.Kind() {
 	case reflect.String:
-		typeAlias := ""
 		quota := StringQuota
-		s, ok := V.Interface().(string)
-		if !ok {
-			typeAlias = fmt.Sprintf("(%T)", V.Interface())
-		}
+		s := fmt.Sprint(V.Interface())
 
 		if strings.Contains(s, StringQuota) {
 			quota = "`"
 		}
-		result = fmt.Sprintf(`%s%s%v%s`, typeAlias, quota, s, quota)
+		result = fmt.Sprintf(`%s%v%s`, quota, s, quota)
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
 		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128:
+
 		result = fmt.Sprint(V.Interface())
 	}
 
@@ -139,18 +144,34 @@ func Serialize(originValue interface{}) (serialized string) {
 
 	case reflect.Map:
 
+		type item struct {
+			key   string
+			value string
+		}
+		items := make([]item, 0, V.Len())
+
 		buf := bytes.Buffer{}
-		buf.WriteString("{")
 		for i, key := range V.MapKeys() {
 			v := V.MapIndex(key).Interface()
-			buf.WriteByte('\n')
-			buf.WriteString(Serialize(key.Interface()))
-			buf.WriteString(SepKv)
-			buf.WriteString(Serialize(v))
+			items = append(items, item{Serialize(key.Interface()), Serialize(v)})
 
 			if i+1 >= MaxMapLen {
 				break
 			}
+		}
+
+		if OptSortMapKeys {
+			sort.Slice(items, func(i, j int) bool {
+				return items[i].key < items[j].key
+			})
+		}
+
+		buf.WriteString("{")
+		for _, item := range items {
+			buf.WriteByte('\n')
+			buf.WriteString(item.key)
+			buf.WriteString(SepKv)
+			buf.WriteString(item.value)
 		}
 
 		body := withTab(buf.String())
