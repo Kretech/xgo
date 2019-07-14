@@ -16,6 +16,7 @@ var (
 	// uint8(97) => 'a'
 	OptShowUint8AsByte = false
 
+	// 按字典序显示map.keys
 	OptSortMapKeys = true
 )
 

@@ -39,20 +39,24 @@ dump.NewCliDumper(dump.OptOut(buf))
 ```go
 // 全局禁用
 // 可以在生产环境使用该选项避免意外
-dump.Disable = true
+dump.Disable = false
 
 // 显示代码位置
 dump.ShowFileLine1 = true
-dump.MarginLine1   = 36     // 显示行号时，前面可以加空格
 
-// 自定义输出
+// 自定义输出位置
 dump.DefaultWriter = os.Stdout
 
 // 数组最多显示多少个，其余的会省略为“...”
 dump.MaxSliceLen = 32
 dump.MaxMapLen   = 32
+
+// 按字典序显示map.keys
+dump.OptSortMapKeys = true
 ```
 
 ## More TestCases
 
 https://github.com/Kretech/xgo/blob/master/dump/cli_dumper_test.go
+
+https://github.com/Kretech/xgo/blob/master/dump/serialize_test.go

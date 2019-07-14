@@ -19,8 +19,8 @@ var (
 	DefaultWriter io.Writer = os.Stdout
 
 	// 显示对应代码位置
-	ShowFileLine1 = false
-	MarginLine1   = 36
+	ShowFileLine1 = true
+	MarginLine1   = 36 // Deprecated
 )
 
 var _ Dumper = NewCliDumper()
