@@ -27,31 +27,33 @@ dump.Dump(a)
 c := dump.NewCliDumper()
 c.Dump(a)
 
-// 自定义 out
+// use custom writer
 buf := &bytes.Buffer{}
 dump.NewCliDumper(dump.OptOut(buf))
 ```
 
 ## Option
 
-自定义选项
+custom options
 
 ```go
-// 全局禁用
-// 可以在生产环境使用该选项避免意外
+// disable dump in global, default false means enable
+// disable it in production to ignore the unnecessary output and risks
 dump.Disable = false
 
-// 显示代码位置
+// show variant line in head
 dump.ShowFileLine1 = true
 
-// 自定义输出位置
+// change writer in global
 dump.DefaultWriter = os.Stdout
 
-// 数组最多显示多少个，其余的会省略为“...”
+// only show the first-n elements
+// others will show as '...'
+// * these options is design for debug clearly
 dump.MaxSliceLen = 32
 dump.MaxMapLen   = 32
 
-// 按字典序显示map.keys
+// render map with sorted keys
 dump.OptSortMapKeys = true
 ```
 
