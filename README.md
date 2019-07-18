@@ -6,21 +6,26 @@ Go Components
 
 ## Release
 
-- [digo](https://github.com/Kretech/xgo/tree/master/digo) 依赖注入容器
-- [dumper](https://github.com/Kretech/xgo/tree/master/dump) 靠 ast/parse 解析变量名的 Dump 工具类
-- [firewall](https://github.com/Kretech/xgo/tree/master/firewall) 频率限制工具类
-- [version](https://github.com/Kretech/xgo/tree/master/version) 高效版本比较库
-- [String](https://github.com/Kretech/xgo/blob/master/string/string.go) 支持链式操作的 String 类
-- [astutil](https://github.com/Kretech/xgo/tree/master/astutil) 自己常用的 ast 功能
-- [gotemplate](https://github.com/Kretech/xgo/tree/master/gotemplate) 自己常用的 template 函数
-- [random](https://github.com/Kretech/xgo/tree/master/random) math/rand 的一层壳，随机 Source
+- [digo](https://github.com/Kretech/xgo/tree/master/digo) dependency-injector container
+- [dumper](https://github.com/Kretech/xgo/tree/master/dump) var_dumper could show var names by ast/parse
+- [firewall](https://github.com/Kretech/xgo/tree/master/firewall) rate limiter in the meanwhile
+- [version](https://github.com/Kretech/xgo/tree/master/version) semantic version's operation and compares
+- [String](https://github.com/Kretech/xgo/blob/master/string/string.go) wraped string class using chain's functions
+- [astutil](https://github.com/Kretech/xgo/tree/master/astutil) helpers for ast package
+- [gotemplate](https://github.com/Kretech/xgo/tree/master/gotemplate) helpers for html/template
+- [random](https://github.com/Kretech/xgo/tree/master/random) wraped math/rand with a time.now's source
 
 ## todo
 
-- [Carbon](https://github.com/Kretech/xgo/tree/master/date/carbon) 时间工具类
-- [word](https://github.com/Kretech/xgo/tree/master/word) 单词操作库
-- GoQuery 像 jQuery 那样的 ast/parse 包
-- Scanner 源码扫描
-- Dict 字典类。参考 Php/Array 和 Python/dict
-- Array 内存合理、使用友好的数组类
+- [Carbon](https://github.com/Kretech/xgo/tree/master/date/carbon) wraped time class like [php-carbon](https://carbon.nesbot.com/)
+- [word](https://github.com/Kretech/xgo/tree/master/word) helpers for words
+- GoQuery: helpers use ast like jQuery
+- Scanner: code scanner
+- Dict: like Php/Array or Python/dict
+- Array: slice without sliceHeader
+
+## Inspired By
+
+- https://symfony.com/
+- https://commons.apache.org/
 
