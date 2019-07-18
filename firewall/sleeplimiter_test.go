@@ -1,9 +1,13 @@
 package firewall
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"testing"
 	"time"
+
+	"golang.org/x/time/rate"
 )
 
 func TestSleepLimiter_Acquire(t *testing.T) {
@@ -22,9 +26,25 @@ func TestSleepLimiter_Acquire(t *testing.T) {
 	fmt.Println(int(end.Sub(start)/ttl)*limit <= total)
 }
 
+func TestNewSleepLimiterDemo(t *testing.T) {
+	l := NewSleepLimiter(1*time.Second, 2)
+	time.Sleep(2 * time.Second)
+	for {
+		l.Acquire()
+		log.Println(`hi`)
+	}
+}
+
 func BenchmarkSleepLimiter_Acquire(b *testing.B) {
 	s := NewSleepLimiter(time.Second, 1<<30)
 	for i := 0; i < b.N; i++ {
 		s.Acquire()
+	}
+}
+
+func BenchmarkRateLimiter(b *testing.B) {
+	var limiter = rate.NewLimiter(1<<30, 1)
+	for i := 0; i < b.N; i++ {
+		limiter.Wait(context.TODO())
 	}
 }

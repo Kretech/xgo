@@ -10,8 +10,8 @@ type SleepLimiter struct {
 	ttl   time.Duration
 	limit int
 
-	current     int
-	currentTime time.Time
+	current  int
+	expireAt time.Time
 
 	sync.Mutex
 }
@@ -24,14 +24,12 @@ func NewSleepLimiter(ttl time.Duration, limit int) *SleepLimiter {
 func (this *SleepLimiter) Acquire() {
 	this.Lock()
 
-	expireAt := this.currentTime.Add(this.ttl)
 	now := time.Now()
-	// expire
-	if expireAt.Before(now) {
-		this.current = 0
-		this.currentTime = now
 
-		expireAt = this.currentTime.Add(this.ttl)
+	// expired
+	if this.expireAt.Before(now) {
+		this.expireAt = now.Add(this.ttl)
+		this.current = 0
 	}
 
 	this.current++
@@ -40,7 +38,7 @@ func (this *SleepLimiter) Acquire() {
 		return
 	}
 
-	time.Sleep(expireAt.Sub(now))
+	time.Sleep(this.expireAt.Sub(now))
 	this.Unlock()
 
 	// 直接尾递归
