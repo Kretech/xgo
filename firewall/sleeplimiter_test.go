@@ -27,6 +27,7 @@ func TestSleepLimiter_Acquire(t *testing.T) {
 }
 
 func TestNewSleepLimiterDemo(t *testing.T) {
+	return
 	l := NewSleepLimiter(1*time.Second, 2)
 	time.Sleep(2 * time.Second)
 	for {

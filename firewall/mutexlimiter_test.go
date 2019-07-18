@@ -24,6 +24,7 @@ func TestMutexLimiter_Acquire(t *testing.T) {
 }
 
 func TestNewMutexLimiterDemo(t *testing.T) {
+	return
 	log.Println(`hi`, 0, 0, time.Now().Unix())
 	l := NewMutexLimiter(1*time.Second, 2)
 	time.Sleep(2 * time.Second)
@@ -37,13 +38,5 @@ func BenchmarkMutexLimiter_Acquire(b *testing.B) {
 	s := NewMutexLimiter(time.Second, 1<<30)
 	for i := 0; i < b.N; i++ {
 		s.Acquire()
-	}
-}
-
-func TestTick(t *testing.T) {
-	for range time.Tick(1 * time.Second) {
-		log.Println(`hi`)
-		//time.Sleep(800 * time.Millisecond)
-		time.Sleep(1 * time.Second)
 	}
 }
