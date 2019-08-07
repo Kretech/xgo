@@ -7,7 +7,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/Kretech/xgo/p"
 	"github.com/fatih/color"
 )
 
@@ -56,7 +55,7 @@ func (c *CliDumper) DepthDump(depth int, args ...interface{}) {
 		return
 	}
 
-	names, compacted := p.DepthCompact(depth+1, args...)
+	names, compacted := DepthCompact(depth+1, args...)
 
 	if ShowFileLine1 {
 		_, _ = fmt.Fprintln(c.out, c.headerLine(depth+1, ``))

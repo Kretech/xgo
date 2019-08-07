@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"strings"
 
+	_ "unsafe"
+
 	"github.com/Kretech/xgo/astutil"
 )
 
@@ -161,12 +163,16 @@ func Compact(args ...interface{}) (paramNames []string, paramAndValues map[strin
 	return DepthCompact(1, args...)
 }
 
+//go:linkname DepthCompact github.com/Kretech/xgo/dump.DepthCompact
 func DepthCompact(depth int, args ...interface{}) (paramNames []string, paramAndValues map[string]interface{}) {
 	paramNames = varNameDepth(depth+1, args...)
 
+	// which lead to len(params) > len(args)
+	// why reverse order? someone wrap this function so there are other values before "depth"
+	// put each args to paramNames by reversed order
 	paramAndValues = make(map[string]interface{}, len(paramNames))
-	for idx, param := range paramNames {
-		paramAndValues[param] = args[idx]
+	for i := 1; i <= len(args); i++ {
+		paramAndValues[paramNames[len(paramNames)-i]] = args[len(args)-i]
 	}
 
 	return
