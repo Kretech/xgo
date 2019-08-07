@@ -53,8 +53,16 @@ dump.DefaultWriter = os.Stdout
 dump.MaxSliceLen = 32
 dump.MaxMapLen   = 32
 
+// serialize options
+
 // render map with sorted keys
 dump.OptSortMapKeys = true
+
+// render []uint8(`ab`) as string("ab")
+OptShowUint8sAsString = true
+
+// render uint8(97) as char('a')
+OptShowUint8AsChar
 ```
 
 ## More TestCases
