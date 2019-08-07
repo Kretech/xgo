@@ -40,12 +40,15 @@ func TestSerialize(t *testing.T) {
 		wantSerialized string
 	}{
 		// TODO: Add test cases.
+		{"byte", byte('a'), "a"},
+		{"uint8", uint8('a'), "a"},
 		{"int", 3, "3"},
 		{"Integer", Integer(3), "3"},
 		{"float", 0.3, "0.3"},
 		{"string", "abc", `"abc"`},
 		{"*string", ptrString("abc"), `"abc"`},
 		{"String", String("abc"), `"abc"`},
+		{"[]byte", []byte("abc"), `[]uint8 (len=3) "abc"`},
 		{"map", map[string]int{"a": 1, "b": 2, "c": 3}, `map[string]int(len=3){"a"=>1"b"=>2"c"=>3}`},
 		{"slice", []int{1, 3, 2}, "[]int(len=3)[0=>1\n1=>3\n2=>2]"},
 	}

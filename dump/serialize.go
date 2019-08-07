@@ -14,7 +14,10 @@ import (
 
 var (
 	// uint8(97) => 'a'
-	OptShowUint8AsByte = false
+	OptShowUint8AsChar = true
+
+	// []uint8{'a','b'} => "ab"
+	OptShowUint8sAsString = true
 
 	// 按字典序显示map.keys
 	OptSortMapKeys = true
@@ -33,6 +36,35 @@ const (
 	Zero = `<zero>`
 	Nil  = "<nil>"
 )
+
+func serializeScalar(V reflect.Value) (result string) {
+
+	switch V.Type().Kind() {
+	case reflect.String:
+		quota := StringQuota
+		s := fmt.Sprint(V.Interface())
+
+		if strings.Contains(s, StringQuota) {
+			quota = "`"
+		}
+		result = fmt.Sprintf(`%s%v%s`, quota, s, quota)
+
+	case reflect.Uint8:
+		if OptShowUint8AsChar {
+			result = fmt.Sprintf("%c", V.Uint())
+		} else {
+			result = fmt.Sprint(V.Interface())
+		}
+
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint /*reflect.Uint8,*/, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
+		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128:
+
+		result = fmt.Sprint(V.Interface())
+	}
+
+	return
+}
 
 func Serialize(originValue interface{}) (serialized string) {
 	if originValue == nil {
@@ -64,31 +96,18 @@ func Serialize(originValue interface{}) (serialized string) {
 	}
 
 	// 基础类型
-	switch T.Kind() {
-	case reflect.String:
-		quota := StringQuota
-		s := fmt.Sprint(V.Interface())
-
-		if strings.Contains(s, StringQuota) {
-			quota = "`"
-		}
-		result = fmt.Sprintf(`%s%v%s`, quota, s, quota)
-
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
-		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128:
-
-		result = fmt.Sprint(V.Interface())
-	}
-
 	if IsScalar(originValue) {
-		serialized = fmt.Sprint(result)
+		serialized = serializeScalar(V)
 		return
 	}
 
 	if isPtr {
 		serialized += color.New(color.FgMagenta).Sprint("*")
 	}
+
+	//复合类型
+	// 1. 先打 head，标明类型
+	// 2. reflect
 
 	rTName := strings.Replace(T.String(), " ", "", 1)
 	head := color.New(color.FgGreen).Sprint(rTName) + " "
@@ -108,6 +127,17 @@ func Serialize(originValue interface{}) (serialized string) {
 
 	// 恶心。。
 	serialized += head
+
+	// special complex
+	switch v := originValue.(type) {
+	case []byte:
+		if !OptShowUint8sAsString {
+			break
+		}
+
+		serialized += Serialize(string(v))
+		return
+	}
 
 	// ...
 

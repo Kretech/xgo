@@ -24,9 +24,11 @@ func TestCliDumper_Dump(t *testing.T) {
 	c := dump.NewCliDumper()
 
 	t.Run(`base`, func(t *testing.T) {
+		dump.OptShowUint8sAsString = true
+		dump.OptShowUint8AsChar = true
 		aInt := 1
 		bStr := `sf`
-		cMap := map[string]interface{}{"name": "z", "age": 14}
+		cMap := map[string]interface{}{"name": "z", "age": 14, "bytes": []byte(string(`abc`)), `aByte`: byte('c')}
 		dArray := []interface{}{&cMap, aInt, bStr}
 		//dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 		c.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
