@@ -25,7 +25,7 @@ func (this Person) Say(c string) string {
 	return this.Name() + ` : ` + c
 }
 
-func TestFunctionSign(t *testing.T) {
+func TestGetFuncHeader(t *testing.T) {
 	type args struct {
 		fn interface{}
 	}
