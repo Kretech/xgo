@@ -1,12 +1,14 @@
 package dynamic
 
 import (
+	"encoding/json"
 	"go/ast"
 	"os"
 	"path"
 	"reflect"
 	"runtime"
 	"strings"
+	"sync"
 	"unsafe"
 
 	"github.com/Kretech/xgo/astutil"
@@ -25,8 +27,50 @@ type FuncHeader struct {
 	Out  []*Parameter
 }
 
+func (it *FuncHeader) Equals(other *FuncHeader) bool {
+	if !(it.Name == other.Name && it.Doc == other.Doc) {
+		return false
+	}
+
+	if !(len(it.In) == len(other.In) && len(it.Out) == len(other.Out)) {
+		return false
+	}
+
+	a := append(it.In, it.Out...)
+	b := append(other.In, other.Out...)
+	for i := range a {
+		if !(a[i].Name == a[i].Name && b[i].RType == b[i].RType) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (it *FuncHeader) Encode() string {
+	bytes, _ := json.Marshal(it)
+	return string(bytes)
+}
+
+var fhCache sync.Map
+
 //GetFuncHeader return function header in runtime
-func GetFuncHeader(originFunc interface{}) (fh FuncHeader, err error) { //abc
+func GetFuncHeader(originFunc interface{}) (fh FuncHeader, err error) {
+	pc := funcPC(originFunc)
+	cacheKey := uint(pc)
+	value, ok := fhCache.Load(cacheKey)
+	if ok {
+		fh = value.(FuncHeader)
+		return
+	}
+
+	fh, err = GetFuncHeaderNoCache(originFunc)
+	fhCache.Store(cacheKey, fh)
+
+	return
+}
+
+func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { //abc
 	pc := funcPC(originFunc)
 	runtimeFunc := runtime.FuncForPC(pc)
 	funcNameFull := runtimeFunc.Name()
