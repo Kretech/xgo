@@ -1,6 +1,7 @@
 package dynamic
 
 import (
+	"log"
 	"reflect"
 	"testing"
 )
@@ -61,5 +62,14 @@ func TestGetFuncHeaderExample(t *testing.T) {
 	t.Log(h.Doc)
 	for _, param := range append(h.In, h.Out...) {
 		t.Log(param.Name, param.RType)
+	}
+}
+
+func ExampleGetFuncHeader() {
+	h, _ := GetFuncHeader(Person{}.Say)
+	log.Println(h.Name)
+	log.Println(h.Doc)
+	for _, param := range append(h.In, h.Out...) {
+		log.Println(param.Name, param.RType)
 	}
 }
