@@ -22,6 +22,7 @@ func (this Person) Name() string {
 	return `noname`
 }
 
+// Say can say something
 func (this Person) Say(c string) string {
 	return this.Name() + ` : ` + c
 }
@@ -66,10 +67,30 @@ func TestGetFuncHeaderExample(t *testing.T) {
 }
 
 func ExampleGetFuncHeader() {
+
+	// // Person ...
+	// type Person struct{}
+	//
+	// // comment
+	// func (this Person) Name() string {
+	// 	return `noname`
+	// }
+	//
+	// // Say can say something
+	// func (this Person) Say(c string) string {
+	// 	return this.Name() + ` : ` + c
+	// }
+
 	h, _ := GetFuncHeader(Person{}.Say)
 	log.Println(h.Name)
+	//: Say-fm
+
 	log.Println(h.Doc)
+	//: // Say can say something
+
 	for _, param := range append(h.In, h.Out...) {
 		log.Println(param.Name, param.RType)
+		//: c string
+		//:  string
 	}
 }
