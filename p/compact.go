@@ -144,7 +144,7 @@ func varNameDepth(skip int, args ...interface{}) (c []string) {
 
 			// 拼装每个参数的名字
 			for _, arg := range call.Args {
-				name := GetExprName(arg)
+				name := astutil.ExprString(arg)
 				r = append(r, name)
 			}
 
@@ -190,9 +190,4 @@ func cacheGet(key string, backup func() interface{}) interface{} {
 	}
 
 	return v
-}
-
-//GetExprName 获取一个表达式的名字
-func GetExprName(expr ast.Expr) (name string) {
-	return astutil.ExprString(expr)
 }
