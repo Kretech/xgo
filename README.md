@@ -25,6 +25,10 @@ Go Components
 - Dict: like Php/Array or Python/dict
 - Array: slice without sliceHeader
 
+## Requirements
+
+Go >= 1.10
+
 ## Inspired By
 
 - https://symfony.com/
