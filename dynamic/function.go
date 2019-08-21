@@ -51,6 +51,10 @@ func GetFuncHeader(originFunc interface{}) (fh FuncHeader, err error) { //abc
 	getAstFunc := func(file *ast.File, funcNameFull string) *ast.FuncDecl {
 		base := path.Base(funcNameFull)
 		base = strings.TrimPrefix(base, file.Name.Name+".")
+		if strings.HasPrefix(runtime.Version(), `go1.10`) {
+			base = strings.Replace(base, "(", "", 1)
+			base = strings.Replace(base, ")", "", 1)
+		}
 
 		for _, d := range file.Decls {
 			if fn, ok := d.(*ast.FuncDecl); ok {
@@ -63,7 +67,8 @@ func GetFuncHeader(originFunc interface{}) (fh FuncHeader, err error) { //abc
 				}
 			}
 		}
-		return file.Scope.Lookup(funcName).Decl.(*ast.FuncDecl)
+
+		return nil
 	}
 
 	astFunc := getAstFunc(astPkg.Files[fileLong], funcNameFull)
