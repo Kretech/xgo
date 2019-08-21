@@ -13,6 +13,10 @@ type Dumper interface {
 
 var defaultDumper Dumper = NewCliDumper()
 
+func Default() Dumper {
+	return defaultDumper
+}
+
 func Dump(args ...interface{}) {
 	defaultDumper.DepthDump(1, args...)
 }

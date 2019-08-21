@@ -114,7 +114,7 @@ func Serialize(originValue interface{}) (serialized string) {
 
 	func() {
 		defer func() {
-			recover()
+
 		}()
 
 		if hasLen(T.Kind()) {
