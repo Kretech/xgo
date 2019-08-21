@@ -7,7 +7,8 @@ Go Components
 ## Release
 
 - [digo](https://github.com/Kretech/xgo/tree/master/digo) dependency-injector container
-- [dumper](https://github.com/Kretech/xgo/tree/master/dump) var_dumper could show var names by ast/parse
+- [dumper](https://github.com/Kretech/xgo/tree/master/dump) var_dumper could show var names by dynamic-lib
+- [dynamic](https://github.com/Kretech/xgo/tree/master/dynamic) use ast and reflect simply at runtime
 - [firewall](https://github.com/Kretech/xgo/tree/master/firewall) rate limiter in the meanwhile
 - [version](https://github.com/Kretech/xgo/tree/master/version) semantic version's operation and compares
 - [String](https://github.com/Kretech/xgo/blob/master/string/string.go) wraped string class using chain's functions
