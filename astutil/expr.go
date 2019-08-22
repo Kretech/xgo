@@ -6,7 +6,8 @@ import (
 	"strings"
 )
 
-//ExprString 获取一个表达式的名字
+//ExprString 获取一个表达式的文本
+// 经过拼装，可能与源码不完全一致
 func ExprString(expr ast.Expr) (name string) {
 	switch exp := expr.(type) {
 

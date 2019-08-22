@@ -24,6 +24,10 @@ func (this Person) Name() string {
 	return `noname`
 }
 
+func (this *Person) PtrName() string {
+	return `ptrName`
+}
+
 // Say can say something
 func (this Person) Say(c string) string {
 	return this.Name() + ` : ` + c
@@ -39,6 +43,7 @@ func TestGetFuncHeader(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{args{func(string) {}}, FuncHeader{Name: `func1`}, false},
 		{args{tEmptyFunc}, FuncHeader{Name: `tEmptyFunc`}, false},
 		{args{tOnlyInFunc}, FuncHeader{Name: `tOnlyInFunc`, In: []*Parameter{{`s`, TString}}}, false},
 		{args{tFunc}, FuncHeader{Name: `tFunc`, In: []*Parameter{{`s1`, TString}}, Out: []*Parameter{{`s2`, TString}}}, false},
@@ -86,7 +91,8 @@ func BenchmarkGetFuncHeaderNoCache_i1_o1(b *testing.B) {
 }
 
 func TestGetFuncHeaderExample(t *testing.T) {
-	h, _ := GetFuncHeader(Person{}.Say)
+	h, _ := GetFuncHeader(func() {})
+	h, _ = GetFuncHeader((&Person{}).PtrName)
 	//h, _ = GetFuncHeader(Person{}.Say)
 	t.Log(h.Name)
 	t.Log(h.Doc)

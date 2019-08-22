@@ -104,7 +104,17 @@ func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { /
 			if fn, ok := d.(*ast.FuncDecl); ok {
 				fnName := fn.Name.Name
 				if fn.Recv != nil {
-					fnName = fn.Recv.List[0].Type.(*ast.Ident).Name + `.` + fnName + `-fm`
+					recv := fn.Recv.List[0].Type
+					recvName := ``
+					switch e := recv.(type) {
+					case *ast.Ident:
+						recvName = e.Name
+					case *ast.StarExpr:
+						recvName = `*` + e.X.(*ast.Ident).Name
+					default:
+						recvName = astutil.ExprString(recv)
+					}
+					fnName = recvName + `.` + fnName + `-fm`
 				}
 				if fnName == base {
 					return fn
@@ -116,6 +126,11 @@ func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { /
 	}
 
 	astFunc := getAstFunc(astPkg.Files[fileLong], funcNameFull)
+	if astFunc == nil {
+		err = errors.Wrap(err, `unsupport function`)
+		return
+	}
+
 	addDoc(&fh, astFunc)
 	addParams(&fh, astFunc)
 
