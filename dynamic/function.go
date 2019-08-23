@@ -15,11 +15,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Parameter contains input and output info of function
 type Parameter struct {
 	Name  string
 	RType reflect.Type
 }
 
+//FuncHeader contains function info
 type FuncHeader struct {
 	Doc  string // docs above func
 	Name string
@@ -27,16 +29,17 @@ type FuncHeader struct {
 	Out  []*Parameter
 }
 
-func (it *FuncHeader) Equals(other *FuncHeader) bool {
-	if !(it.Name == other.Name && it.Doc == other.Doc) {
+// Equals return two header is equivalent for testing
+func (fh *FuncHeader) Equals(other *FuncHeader) bool {
+	if !(fh.Name == other.Name && fh.Doc == other.Doc) {
 		return false
 	}
 
-	if !(len(it.In) == len(other.In) && len(it.Out) == len(other.Out)) {
+	if !(len(fh.In) == len(other.In) && len(fh.Out) == len(other.Out)) {
 		return false
 	}
 
-	a := append(it.In, it.Out...)
+	a := append(fh.In, fh.Out...)
 	b := append(other.In, other.Out...)
 	for i := range a {
 		if !(a[i].Name == a[i].Name && b[i].RType == b[i].RType) {
@@ -47,8 +50,9 @@ func (it *FuncHeader) Equals(other *FuncHeader) bool {
 	return true
 }
 
-func (it *FuncHeader) Encode() string {
-	bytes, _ := json.Marshal(it)
+// Encode is convenient for json marshal
+func (fh *FuncHeader) Encode() string {
+	bytes, _ := json.Marshal(fh)
 	return string(bytes)
 }
 
@@ -70,6 +74,7 @@ func GetFuncHeader(originFunc interface{}) (fh FuncHeader, err error) {
 	return
 }
 
+// GetFuncHeaderNoCache is optional way when the cache is incorrect
 func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { //abc
 	pc := funcPC(originFunc)
 	runtimeFunc := runtime.FuncForPC(pc)
@@ -92,47 +97,14 @@ func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { /
 		return
 	}
 
-	getAstFunc := func(file *ast.File, funcNameFull string) *ast.FuncDecl {
-		base := path.Base(funcNameFull)
-		base = strings.TrimPrefix(base, file.Name.Name+".")
-		if strings.HasPrefix(runtime.Version(), `go1.10`) {
-			base = strings.Replace(base, "(", "", 1)
-			base = strings.Replace(base, ")", "", 1)
-		}
-
-		for _, d := range file.Decls {
-			if fn, ok := d.(*ast.FuncDecl); ok {
-				fnName := fn.Name.Name
-				if fn.Recv != nil {
-					recv := fn.Recv.List[0].Type
-					recvName := ``
-					switch e := recv.(type) {
-					case *ast.Ident:
-						recvName = e.Name
-					case *ast.StarExpr:
-						recvName = `*` + e.X.(*ast.Ident).Name
-					default:
-						recvName = astutil.ExprString(recv)
-					}
-					fnName = recvName + `.` + fnName + `-fm`
-				}
-				if fnName == base {
-					return fn
-				}
-			}
-		}
-
-		return nil
-	}
-
 	astFunc := getAstFunc(astPkg.Files[fileLong], funcNameFull)
 	if astFunc == nil {
 		err = errors.Wrap(err, `unsupport function`)
 		return
 	}
 
-	addDoc(&fh, astFunc)
-	addParams(&fh, astFunc)
+	fh.addDoc(astFunc)
+	fh.addParams(astFunc)
 
 	T := reflect.TypeOf(originFunc)
 	for i, p := range append(fh.In) {
@@ -145,7 +117,40 @@ func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { /
 	return
 }
 
-func addDoc(fh *FuncHeader, astFunc *ast.FuncDecl) {
+func getAstFunc(file *ast.File, funcNameFull string) *ast.FuncDecl {
+	base := path.Base(funcNameFull)
+	base = strings.TrimPrefix(base, file.Name.Name+".")
+	if !strings.Contains(base, `*`) && strings.HasPrefix(runtime.Version(), `go1.10`) {
+		base = strings.Replace(base, "(", "", 1)
+		base = strings.Replace(base, ")", "", 1)
+	}
+
+	for _, d := range file.Decls {
+		if fn, ok := d.(*ast.FuncDecl); ok {
+			fnName := fn.Name.Name
+			if fn.Recv != nil {
+				recv := fn.Recv.List[0].Type
+				recvName := ``
+				switch e := recv.(type) {
+				case *ast.Ident:
+					recvName = e.Name
+				case *ast.StarExpr:
+					recvName = `(` + `*` + e.X.(*ast.Ident).Name + `)`
+				default:
+					recvName = astutil.ExprString(recv)
+				}
+				fnName = recvName + `.` + fnName + `-fm`
+			}
+			if fnName == base {
+				return fn
+			}
+		}
+	}
+
+	return nil
+}
+
+func (fh *FuncHeader) addDoc(astFunc *ast.FuncDecl) {
 	if astFunc.Doc == nil {
 		return
 	}
@@ -157,7 +162,8 @@ func addDoc(fh *FuncHeader, astFunc *ast.FuncDecl) {
 		fh.Doc += c.Text
 	}
 }
-func addParams(fh *FuncHeader, astFunc *ast.FuncDecl) {
+
+func (fh *FuncHeader) addParams(astFunc *ast.FuncDecl) {
 
 	for _, field := range astFunc.Type.Params.List {
 		pa := Parameter{}

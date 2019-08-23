@@ -2,10 +2,10 @@ package dynamic
 
 import (
 	"log"
-	"os"
 	"reflect"
-	"runtime/pprof"
 	"testing"
+
+	"github.com/Kretech/xgo/astutil"
 )
 
 var (
@@ -21,7 +21,7 @@ type Person struct{}
 
 // comment
 func (this Person) Name() string {
-	return `noname`
+	return `name`
 }
 
 func (this *Person) PtrName() string {
@@ -57,37 +57,38 @@ func TestGetFuncHeader(t *testing.T) {
 				t.Errorf("FunctionSign() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !gotF.Equals(&tt.wantF) {
+			if tt.wantF.Equals(&gotF) {
 				t.Errorf("FunctionSign() gotF = %v, want %v", gotF.Encode(), tt.wantF.Encode())
 			}
 		})
 	}
 }
 
-func BenchmarkGetFuncHeader_i0_o0(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		GetFuncHeader(tEmptyFunc)
-	}
-}
+func BenchmarkGetFuncHeader(b *testing.B) {
+	astutil.OptPackageCache = false
+	b.Run(`NoCache_i0_o0`, func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, _ = GetFuncHeaderNoCache(tEmptyFunc)
+		}
+	})
+	b.Run(`NoCache_i1_o1`, func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, _ = GetFuncHeaderNoCache(tFunc)
+		}
+	})
 
-func BenchmarkGetFuncHeader_i1_o1(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		GetFuncHeader(tFunc)
-	}
-}
+	astutil.OptPackageCache = true
+	b.Run(`CacheAST`, func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, _ = GetFuncHeaderNoCache(tFunc)
+		}
+	})
 
-func BenchmarkGetFuncHeaderNoCache_i1_o1(b *testing.B) {
-	debug := func() bool { return false }
-	if debug() {
-		f, _ := os.Create("dynamic.pprof")
-		_ = pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
-
-	for i := 0; i < b.N; i++ {
-		GetFuncHeader(tFunc)
-		//GetFuncHeaderNoCache(tFunc)
-	}
+	b.Run(`CacheFH`, func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_, _ = GetFuncHeader(tFunc)
+		}
+	})
 }
 
 func TestGetFuncHeaderExample(t *testing.T) {
