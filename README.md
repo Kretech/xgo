@@ -1,6 +1,8 @@
 # *XGo*
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/Kretech/xgo)](https://goreportcard.com/report/github.com/Kretech/xgo)
 [![Build Status](https://travis-ci.org/Kretech/xgo.svg?branch=master)](https://travis-ci.org/Kretech/xgo)
+[![Coverage Status](https://coveralls.io/repos/github/Kretech/xgo/badge.svg)](https://coveralls.io/github/Kretech/xgo)
 
 Go Components
 
