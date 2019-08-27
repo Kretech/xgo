@@ -57,7 +57,7 @@ func TestGetFuncHeader(t *testing.T) {
 				t.Errorf("FunctionSign() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if tt.wantF.Equals(&gotF) {
+			if !tt.wantF.Equals(&gotF) {
 				t.Errorf("FunctionSign() gotF = %v, want %v", gotF.Encode(), tt.wantF.Encode())
 			}
 		})
