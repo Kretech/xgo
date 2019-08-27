@@ -5,7 +5,7 @@ var _ DIGo = &stub{}
 type stub struct {
 }
 
-func (di *stub) FillClass(classPtr interface{}) (err error) {return }
+func (di *stub) FillClass(classPtr interface{}) (err error) { return }
 
 func (di *stub) MapSingleton(T Type, V Value) (err error) { return err }
 

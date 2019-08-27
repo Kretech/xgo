@@ -7,9 +7,9 @@ import (
 )
 
 type (
-	Type = reflect.Type
+	Type  = reflect.Type
 	Value = reflect.Value
-	Kind = reflect.Kind
+	Kind  = reflect.Kind
 )
 
 var (
@@ -126,7 +126,7 @@ func (di *DImpl) mapTo(T Type, V Value) (err error) {
 	return err
 }
 
-func (this *DImpl) BindFunc(fn interface{}) () {
+func (this *DImpl) BindFunc(fn interface{}) {
 
 }
 

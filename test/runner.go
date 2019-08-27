@@ -12,6 +12,6 @@ func TR(t *testing.T) *TestRunner {
 	}
 }
 
-func (this *TestRunner) Add(fn func(t *Assert)) () {
+func (this *TestRunner) Add(fn func(t *Assert)) {
 	fn(A(this.T))
 }

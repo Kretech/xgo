@@ -108,7 +108,7 @@ func TestDemo_Singleton(t *testing.T) {
 	})
 
 	p := new(struct {
-		Name string;
+		Name string
 		Age  int
 	})
 	_ = di.FillClass(p)
