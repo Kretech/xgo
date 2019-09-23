@@ -6,6 +6,7 @@ import (
 	"github.com/Kretech/xgo/p"
 )
 
-//func DepthCompact(depth int, args ...interface{}) (paramNames []string, paramAndValues map[string]interface{})
+// use this to init function in p package
+var _ = p.DepthCompact
 
-var DepthCompact = p.DepthCompact
+func DepthCompact(depth int, args ...interface{}) (paramNames []string, paramAndValues map[string]interface{})
