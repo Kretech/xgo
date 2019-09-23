@@ -163,7 +163,6 @@ func Compact(args ...interface{}) (paramNames []string, paramAndValues map[strin
 	return DepthCompact(1, args...)
 }
 
-//go:linkname DepthCompact github.com/Kretech/xgo/dump.DepthCompact
 func DepthCompact(depth int, args ...interface{}) (paramNames []string, paramAndValues map[string]interface{}) {
 	paramNames = varNameDepth(depth+1, args...)
 
