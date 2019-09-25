@@ -28,7 +28,7 @@ func ReadPackage(pkgPath string) (pkg *ast.Package, err error) {
 			break
 		}
 	}
-	return ReadPackageWithName(pkgPath, short, func(info os.FileInfo) bool {
+	return ReadPackageWithName(pkgPath, short, `.`, func(info os.FileInfo) bool {
 		return true
 	})
 }
@@ -36,13 +36,14 @@ func ReadPackage(pkgPath string) (pkg *ast.Package, err error) {
 var pkgCache sync.Map
 
 //ReadPackageWithName
-func ReadPackageWithName(pkgPath string, pkgName string, filter func(os.FileInfo) bool) (pkg *ast.Package, err error) {
+// fileScope used for cache key
+func ReadPackageWithName(pkgPath string, pkgName string, fileScope string, filter func(os.FileInfo) bool) (pkg *ast.Package, err error) {
 
 	if !OptPackageCache {
 		return readPackageWithNameNoCache(pkgPath, pkgName, filter)
 	}
 
-	cacheKey := pkgPath + `|` + pkgName + `|F` + funcCacheKey(filter)
+	cacheKey := pkgPath + `|` + pkgName + `|` + fileScope
 	value, ok := pkgCache.Load(cacheKey)
 	if ok {
 		pkg = value.(*ast.Package)
@@ -74,7 +75,7 @@ func readPackageWithNameNoCache(pkgPath string, pkgName string, filter func(os.F
 		for name := range pkgs {
 			keys = append(keys, name)
 		}
-		err = errors.Errorf("no packge %s in [%s]", pkgName, strings.Join(keys, `,`))
+		err = errors.Errorf("no package %s in [%s]", pkgName, strings.Join(keys, `,`))
 	}
 
 	return

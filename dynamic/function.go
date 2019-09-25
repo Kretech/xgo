@@ -89,7 +89,7 @@ func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { /
 	pkgShort := path.Base(pkgPath)
 	fileShort := path.Base(fileLong)
 
-	astPkg, err := astutil.ReadPackageWithName(pkgPath, pkgShort, func(info os.FileInfo) bool {
+	astPkg, err := astutil.ReadPackageWithName(pkgPath, pkgShort, fileShort, func(info os.FileInfo) bool {
 		return strings.Contains(info.Name(), fileShort)
 	})
 	if err != nil {
