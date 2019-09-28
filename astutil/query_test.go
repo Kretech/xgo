@@ -42,7 +42,7 @@ func TestChildren(t *testing.T) {
 	t.Run(`queryField`, func(t *testing.T) {
 		EnableLog()
 		f, err := Find(astFile, []interface{}{new(ast.FuncDecl)})
-		t.Log(Name(f[0]), err)
+		t.Log(Name(f[0]), err) // assert len(f)>0
 
 		children, err := Find(astFile, []interface{}{new(ast.FuncDecl), new(ast.AssignStmt)})
 		for _, child := range children {
