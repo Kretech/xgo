@@ -58,7 +58,10 @@ func (fh *FuncHeader) Encode() string {
 
 var fhCache sync.Map
 
-//GetFuncHeader return function header in runtime
+//GetFuncHeader return function header cached in funcPC
+// @fixme
+// according the comment of reflect/Value.Pointer
+// pc is not unique for simple function
 func GetFuncHeader(originFunc interface{}) (fh FuncHeader, err error) {
 	pc := funcPC(originFunc)
 	cacheKey := uint(pc)
@@ -74,8 +77,8 @@ func GetFuncHeader(originFunc interface{}) (fh FuncHeader, err error) {
 	return
 }
 
-// GetFuncHeaderNoCache is optional way when the cache is incorrect
-func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) { //abc
+// GetFuncHeaderNoCache return function header in runtime without cache
+func GetFuncHeaderNoCache(originFunc interface{}) (fh FuncHeader, err error) {
 	pc := funcPC(originFunc)
 	runtimeFunc := runtime.FuncForPC(pc)
 	funcNameFull := runtimeFunc.Name()
@@ -194,15 +197,10 @@ func (fh *FuncHeader) addParams(astFunc *ast.FuncDecl) {
 	}
 }
 
-// sys.PtrSize
-const PtrSize = 4 << (^uintptr(0) >> 63) // unsafe.Sizeof(uintptr(0)) but an ideal const
-
-// copy from runtime/funcPC
-// copy from syscall/funcPC
 func funcPC(f interface{}) uintptr {
 	return reflect.ValueOf(f).Pointer()
-	//return **(**uintptr)(add(unsafe.Pointer(&f), PtrSize))
-	//return **(**uintptr)(unsafe.Pointer(&f))
+	// see reflect/Value.Pointer and syscall/funcPC
+	// return **(**uintptr)(unsafe.Pointer(&f))
 }
 
 func add(p unsafe.Pointer, x uintptr) unsafe.Pointer {

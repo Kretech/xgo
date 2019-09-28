@@ -5,10 +5,8 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
-	"unsafe"
 
 	"github.com/pkg/errors"
 )
@@ -18,7 +16,7 @@ var (
 	OptPackageCache = true
 )
 
-//
+// ReadPackage is simple wrapper for parserDir
 // use pkgName with last segment in pkgPath
 func ReadPackage(pkgPath string) (pkg *ast.Package, err error) {
 	short := ``
@@ -35,7 +33,7 @@ func ReadPackage(pkgPath string) (pkg *ast.Package, err error) {
 
 var pkgCache sync.Map
 
-//ReadPackageWithName
+// ReadPackageWithName read package with specified package name
 // fileScope used for cache key
 func ReadPackageWithName(pkgPath string, pkgName string, fileScope string, filter func(os.FileInfo) bool) (pkg *ast.Package, err error) {
 
@@ -55,11 +53,6 @@ func ReadPackageWithName(pkgPath string, pkgName string, fileScope string, filte
 	pkgCache.Store(cacheKey, pkg)
 
 	return
-}
-
-func funcCacheKey(filter func(os.FileInfo) bool) (s string) {
-	t := **(**uintptr)(unsafe.Pointer(&filter))
-	return strconv.FormatUint(uint64(t), 16)
 }
 
 func readPackageWithNameNoCache(pkgPath string, pkgName string, filter func(os.FileInfo) bool) (pkg *ast.Package, err error) {
