@@ -9,6 +9,7 @@ import (
 //ExprString generates code by ast.Expr like printer.Fprint()
 // 经过拼装，可能与源码不完全一致
 // TODO 2019.9.28	最开始不知道有 printer 这个包，手写了一坨，后面可能会直接接过去。。
+// Deprecated
 func ExprString(expr ast.Expr) (name string) {
 	switch exp := expr.(type) {
 

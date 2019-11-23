@@ -31,7 +31,7 @@ func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
-func TestChildren(t *testing.T) {
+func TestFind(t *testing.T) {
 
 	t.Run(`print`, func(t *testing.T) {
 		buf := bytes.NewBufferString(``)
