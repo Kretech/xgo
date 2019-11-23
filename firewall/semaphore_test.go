@@ -40,7 +40,6 @@ func TestChanSemaphore(t *testing.T) {
 
 func BenchmarkNewChanSemaphore(b *testing.B) {
 	s := NewChanSemaphore(1<<30 - 1)
-
 	for i := 0; i < b.N; i++ {
 		s.Acquire()
 		s.Release()
