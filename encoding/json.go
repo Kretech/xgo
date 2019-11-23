@@ -3,7 +3,9 @@ package encoding
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
+	"os"
 )
 
 type Opt uint8
@@ -12,6 +14,10 @@ const (
 	OptEscapeHtml Opt = 1 << 1
 
 	OptIndentTab Opt = 1 << 2
+)
+
+var (
+	logger = log.New(os.Stderr, `xgo.encoding`, log.Ldate|log.Ltime|log.Lshortfile)
 )
 
 func (opt Opt) escapeHtml() bool {
@@ -45,7 +51,7 @@ func JsonEncode(s interface{}, opts ...Opt) string {
 
 	err := encoder.Encode(s)
 	if err != nil {
-		log.Printf("xgo.encoding.JsonEncode error: %v", err)
+		logger.Output(2, fmt.Sprintf("JsonEncode error: %v", err))
 	}
 
 	b := buffer.Bytes()
