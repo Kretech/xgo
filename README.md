@@ -15,6 +15,7 @@ Go Components
 - [version](https://github.com/Kretech/xgo/tree/master/version) semantic version's operation and compares
 - [String](https://github.com/Kretech/xgo/blob/master/string/string.go) wraped string class using chain's functions
 - [astutil](https://github.com/Kretech/xgo/tree/master/astutil) helpers for ast package
+- [pipe](https://github.com/Kretech/xgo/tree/master/pipe) concurrently call bin in pipe
 - [gotemplate](https://github.com/Kretech/xgo/tree/master/gotemplate) helpers for html/template
 - [random](https://github.com/Kretech/xgo/tree/master/random) wraped math/rand with a time.now's source
 
