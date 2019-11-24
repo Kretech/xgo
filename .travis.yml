@@ -6,4 +6,7 @@ go:
   - "1.11.x"
   - "1.10.x"
 
+before_script:
+  - gcc ./pipe/examples/cpipe.c -o ./pipe/a.out
+
 script: go test ./...
