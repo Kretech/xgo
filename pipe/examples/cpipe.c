@@ -5,7 +5,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-const int n = 702410;
+#define n 702410
 int a[n];
 
 double dosth()
