@@ -1,36 +1,46 @@
 package pipe
 
 import (
-	"log"
+	"fmt"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
 func TestPipes_WriteAndRead(t *testing.T) {
-	p := NewPipes(8, exec.Command("./a.out"))
+	pipes := []Pipe{}
+	for i := 0; i < 8; i++ {
+		pipes = append(pipes, NewExecPipe(exec.Command("./a.out")))
+	}
+	p := NewPipes(pipes)
+
 	err := p.Start()
 	if err != nil {
 		t.Error(err)
-		return
 	}
+	defer p.Stop()
 
-	resp, err := p.WriteAndRead([]byte("hello_pipe1\n"))
-	log.Println(string(resp), err)
-
-	resp, err = p.WriteAndRead([]byte("hello_pipe2\n"))
-	log.Println(string(resp), err)
-
-	resp, err = p.WriteAndRead([]byte("hello_pipe3\n"))
-	log.Println(string(resp), err)
+	for i := 0; i < 10; i++ {
+		s := fmt.Sprintf("hello_pipe%d\n", i)
+		resp, err := p.WriteAndRead([]byte(s))
+		if strings.Contains(string(resp), s) {
+			t.Error("expect", s, "got", string(resp), err)
+		}
+	}
 }
 
 func BenchmarkPipes_WriteAndReadParallel(b *testing.B) {
-	p := NewPipes(4, exec.Command("./a.out"))
+	pipes := []Pipe{}
+	for i := 0; i < 8; i++ {
+		pipes = append(pipes, NewExecPipe(exec.Command("./a.out")))
+	}
+	p := NewPipes(pipes)
+
 	err := p.Start()
 	if err != nil {
 		b.Error(err)
-		return
 	}
+	defer p.Stop()
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {

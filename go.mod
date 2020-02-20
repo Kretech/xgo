@@ -8,8 +8,5 @@ require (
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/petermattis/goid v0.0.0-20180202154549-b0b1615b78e5
 	github.com/pkg/errors v0.8.1
-	github.com/stretchr/testify v1.3.0 // indirect
-	go.uber.org/atomic v1.4.0
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4
-	golang.org/x/xerrors v0.0.0-20190315151331-d61658bd2e18
 )
