@@ -1,26 +1,21 @@
 package pipe
 
 import (
-	"os/exec"
-
 	"github.com/pkg/errors"
 )
 
 type Pipes struct {
-	pipes     []*Pipe
-	pipesChan chan *Pipe
+	pipes     []Pipe
+	pipesChan chan Pipe
 }
 
 //
-func NewPipes(size int, cmdPtr *exec.Cmd) *Pipes {
+func NewPipes(pipes []Pipe) *Pipes {
 	p := &Pipes{
-		pipes:     make([]*Pipe, size),
-		pipesChan: make(chan *Pipe, size),
+		pipes:     pipes,
+		pipesChan: make(chan Pipe, len(pipes)),
 	}
-	for i := 0; i < size; i++ {
-		cmd := *cmdPtr
-		pipe := NewPipe(&cmd)
-		p.pipes[i] = pipe
+	for _, pipe := range pipes {
 		p.pipesChan <- pipe
 	}
 	return p
@@ -36,11 +31,21 @@ func (this *Pipes) Start() (err error) {
 	return
 }
 
-func (this *Pipes) AcquirePipe() *Pipe {
+func (this *Pipes) Stop() (err error) {
+	for i := 0; i < len(this.pipes); i++ {
+		stop := this.pipes[i].Stop()
+		if stop != nil {
+			err = errors.Wrapf(stop, "pipes[%d]", i)
+		}
+	}
+	return
+}
+
+func (this *Pipes) AcquirePipe() Pipe {
 	return <-this.pipesChan
 }
 
-func (this *Pipes) ReleasePipe(p *Pipe) {
+func (this *Pipes) ReleasePipe(p Pipe) {
 	this.pipesChan <- p
 }
 

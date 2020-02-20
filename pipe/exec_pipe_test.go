@@ -6,6 +6,8 @@ import (
 	"log"
 	"math/rand"
 	"os/exec"
+	"strings"
+	"sync"
 	"testing"
 )
 
@@ -42,22 +44,42 @@ func TestPipe(t *testing.T) {
 		_ = rn.Writer.Flush()
 
 		line, prefix, err := rn.ReadLine()
-		log.Println(string(line), prefix, err)
+		t.Log(string(line), prefix, err)
 	}
 }
 
 func TestPipe_Call(t *testing.T) {
 	//p := NewPipe(exec.Command("awk", "'{print $0}'"))
-	p := NewPipe(exec.Command("./a.out"))
+	p := NewExecPipe(exec.Command("./a.out"))
 	p.Start()
 
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+
+	go func() {
+		wg.Wait()
+		err := p.Stop()
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
 	resp, err := p.WriteAndRead([]byte("hello_pipe\n"))
-	log.Println(string(resp), err)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !strings.Contains(string(resp), "hello_pipe") {
+		t.Error(string(resp))
+	}
+
+	wg.Done()
 }
 
 func BenchmarkPipe_WriteAndRead(b *testing.B) {
-	p := NewPipe(exec.Command("./a.out"))
+	p := NewExecPipe(exec.Command("./a.out"))
 	p.Start()
+	defer p.Stop()
 
 	for i := 0; i < b.N; i++ {
 		_, _ = p.WriteAndRead([]byte("hello_pipe\n"))
@@ -65,8 +87,9 @@ func BenchmarkPipe_WriteAndRead(b *testing.B) {
 }
 
 func BenchmarkPipe_WriteAndReadParallel(b *testing.B) {
-	p := NewPipe(exec.Command("./a.out"))
+	p := NewExecPipe(exec.Command("./a.out"))
 	p.Start()
+	defer p.Stop()
 
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {

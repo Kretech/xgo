@@ -34,7 +34,7 @@ int main()
 	while (~scanf("%s", a))
 	{
 		double t = dosth();
-		printf("%d:|%s|%lu|t:%f\n", id, a, strlen(a), t);
+		printf("p%d:\tread:(len=%lu) %s\tusetime:%f\n", id, strlen(a), a, t);
 		fflush(stdout);
 	}
 	return 0;
