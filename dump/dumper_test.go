@@ -1,27 +1,13 @@
 package dump_test
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/Kretech/xgo/dump"
 	"github.com/Kretech/xgo/encoding"
 )
 
-type _S struct {
-}
-
-func (this *_S) a() string {
-	return `_s.a`
-}
-
-func (this *_S) b(t string) string {
-	return `_s.b(` + t + `)`
-}
-
-// go test -v -vet off -test.run ^TestCliDumper_Dump ./dump/...
-func TestCliDumper_Dump(t *testing.T) {
-	c := dump.NewCliDumper()
+func TestDump_Example(t *testing.T) {
 
 	t.Run(`base`, func(t *testing.T) {
 		dump.OptShowUint8sAsString = true
@@ -31,17 +17,17 @@ func TestCliDumper_Dump(t *testing.T) {
 		cMap := map[string]interface{}{"name": "z", "age": 14, "bytes": []byte(string(`abc`)), `aByte`: byte('c')}
 		dArray := []interface{}{&cMap, aInt, bStr}
 		//dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
-		c.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
+		dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 	})
 
 	t.Run(`operator`, func(t *testing.T) {
 		a := 0.1
 		b := 0.2
 		cc := 0.3
-		c.Dump(a + b)
-		c.Dump(a+b == cc)
-		c.Dump(a+b > cc)
-		c.Dump(a+b < cc)
+		dump.Dump(a + b)
+		dump.Dump(a+b == cc)
+		dump.Dump(a+b > cc)
+		dump.Dump(a+b < cc)
 	})
 
 	t.Run(`interface`, func(t *testing.T) {
@@ -49,7 +35,7 @@ func TestCliDumper_Dump(t *testing.T) {
 		var emptyInterface interface{}
 		var emptyMap map[string]interface{}
 		var emptySlice []interface{}
-		c.Dump(err, emptyInterface, emptyMap, emptySlice, nil)
+		dump.Dump(err, emptyInterface, emptyMap, emptySlice, nil)
 	})
 
 	t.Run(`struct`, func(t *testing.T) {
@@ -84,48 +70,51 @@ func TestCliDumper_Dump(t *testing.T) {
 			}}
 		p2 := &p1
 
-		c.Dump(p2)
+		dump.Dump(p2)
 
 		type Person2 Person
 		p3 := Person2(p1)
-		c.Dump(p3)
+		dump.Dump(p3)
 
 		type Person3 = Person2
 		p4 := Person3(p1)
-		c.Dump(p4)
+		dump.Dump(p4)
 
 		type Person4 struct {
 			Person Person
 			Person2
 		}
 		p5 := Person4{p1, p4}
-		c.Dump(p5)
+		dump.Dump(p5)
 	})
 
 	userId := func() int { return 4 }
-	c.Dump(userId())
+	dump.Dump(userId())
 
-	c.Dump(userId2())
+	dump.Dump(userId2())
 
 	_s := _S{}
-	c.Dump(_s.a())
-	c.Dump(_s.b(`t`))
+	dump.Dump(_s.a())
+	dump.Dump(_s.b(`t`))
 
 	num3 := 3
-	c.Dump(`abc`)
-	c.Dump(encoding.JsonEncode(`abc`))
-	c.Dump(encoding.JsonEncode(map[string]interface{}{"a": num3}))
+	dump.Dump(`abc`)
+	dump.Dump(encoding.JsonEncode(`abc`))
+	dump.Dump(encoding.JsonEncode(map[string]interface{}{"a": num3}))
 
 	ch := make(chan bool)
-	c.Dump(ch)
+	dump.Dump(ch)
+}
 
-	buf := &bytes.Buffer{}
-	c = dump.NewCliDumper(dump.OptOut(buf))
-	c.Dump(1)
+type _S struct {
+}
 
-	if buf.Len() < 1 {
-		t.Error("dump failed", buf.Len(), buf.String())
-	}
+func (this *_S) a() string {
+	return `_s.a`
+}
+
+func (this *_S) b(t string) string {
+	return `_s.b(` + t + `)`
 }
 
 func userId2() int {

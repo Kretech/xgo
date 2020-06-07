@@ -15,23 +15,6 @@ dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArra
 
 ![](https://i.loli.net/2020/06/03/ojTUsJAui5WKFMf.png)
 
-## Usage
-
-```go
-a := 1
-
-// use default instance
-dump.Dump(a)
-
-// new instance
-c := dump.NewCliDumper()
-c.Dump(a)
-
-// use custom writer
-buf := &bytes.Buffer{}
-dump.NewCliDumper(dump.OptOut(buf))
-```
-
 ## Option
 
 custom options
@@ -67,6 +50,6 @@ OptShowUint8AsChar
 
 ## More TestCases
 
-https://github.com/Kretech/xgo/blob/master/dump/cli_dumper_test.go
+https://github.com/Kretech/xgo/blob/master/dump/dumper_test.go
 
 https://github.com/Kretech/xgo/blob/master/dump/serialize_test.go
