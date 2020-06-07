@@ -9,20 +9,16 @@ import (
 func TestVarName4Debug(t *testing.T) {
 	a := 1
 	t.Run(`pkg.VarName`, func(t *testing.T) {
-		if v := dynamic.VarName(a); len(v) == 0 || v[0] != `a` {
-			t.Error(v)
-		}
-	})
-
-	t.Run(`pkg.VarName`, func(t *testing.T) {
-		if v := dynamic.VarName(a); len(v) == 0 || v[0] != `a` {
+		v := dynamic.VarName(a)
+		if len(v) == 0 || v[0] != `a` {
 			t.Error(v)
 		}
 	})
 
 	t.Run(`newName.VarName`, func(t *testing.T) {
-		name := dynamic.Name{X: `name`}
-		if v := name.VarName(a); len(v) == 0 || v[0] != `a` {
+		name := dynamic.Name{X: `name`, Y: `VarName`}
+		v := name.VarName(a)
+		if len(v) == 0 || v[0] != `a` {
 			t.Error(v)
 		}
 	})
