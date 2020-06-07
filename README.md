@@ -10,10 +10,11 @@ Go Components
 
 - [digo](https://github.com/Kretech/xgo/tree/master/digo) dependency-injector container
 - [dumper](https://github.com/Kretech/xgo/tree/master/dump) var_dumper could show var names by dynamic-lib
+- [httpclient](https://github.com/Kretech/xgo/tree/master/httpclient) fantastic httpclient
 - [dynamic](https://github.com/Kretech/xgo/tree/master/dynamic) use ast and reflect simply at runtime
 - [firewall](https://github.com/Kretech/xgo/tree/master/firewall) rate limiter in the meanwhile
 - [version](https://github.com/Kretech/xgo/tree/master/version) semantic version's operation and compares
-- [String](https://github.com/Kretech/xgo/blob/master/string/string.go) wraped string class using chain's functions
+- [string](https://github.com/Kretech/xgo/blob/master/string/string.go) wraped string class using chain's functions
 - [astutil](https://github.com/Kretech/xgo/tree/master/astutil) helpers for ast package
 - [pipe](https://github.com/Kretech/xgo/tree/master/pipe) concurrently call bin in pipe
 - [gotemplate](https://github.com/Kretech/xgo/tree/master/gotemplate) helpers for html/template
