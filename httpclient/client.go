@@ -23,7 +23,7 @@ type Client struct {
 
 func NewClient() *Client {
 	c := &Client{
-		Client: http.DefaultClient,
+		Client: DefaultHttpClient,
 	}
 	return c
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -79,12 +80,16 @@ func (r *Request) BuildRequest(ctx context.Context) (*http.Request, error) {
 	return req, nil
 }
 
+var (
+	DefaultHttpClient = &http.Client{Timeout: 15 * time.Second}
+)
+
 func (r *Request) Do(ctx context.Context, clients ...*http.Client) (resp *Response, err error) {
 	var c *http.Client
 	if len(clients) > 0 {
 		c = clients[0]
 	} else {
-		c = http.DefaultClient
+		c = DefaultHttpClient
 	}
 
 	req, err := r.BuildRequest(ctx)

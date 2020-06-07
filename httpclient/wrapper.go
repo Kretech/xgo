@@ -2,6 +2,7 @@ package httpclient
 
 import "errors"
 
+// see wrapper_test.go
 type ResponseWrapper interface {
 	Error() error
 	SetData(interface{})

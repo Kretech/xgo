@@ -44,9 +44,12 @@ resp, _ := ...
 //     }
 // }
 
-resp, err := resp.Unwrap(FooWrapper{})
+err := resp.UnwrapTo(FooWrapper{}, &v)
+/* or */ 
+v, err := resp.UnwrapToInterface(FooWrapper{})
+
 println(err)	// "some error"
-println(resp)	// {"id":1}
+println(v)	// {"id":1}
 ```
 
 ### Dynamic Request Host
