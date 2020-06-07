@@ -1,0 +1,5 @@
+package dynamic
+
+func init() {
+
+}

@@ -1,22 +1,21 @@
 package dump
 
+import (
+	"os"
+
+	"github.com/Kretech/xgo/dynamic"
+)
+
 var (
 	// disable dump in global scope
 	// use it in production
 	Disable = false
 )
 
-type Dumper interface {
-	Dump(args ...interface{})
-	DepthDump(depth int, args ...interface{})
-}
-
-var defaultDumper Dumper = NewCliDumper()
-
-func Default() Dumper {
-	return defaultDumper
-}
-
 func Dump(args ...interface{}) {
-	defaultDumper.DepthDump(1, args...)
+	d := &CliDumper{
+		out:  os.Stdout,
+		name: dynamic.Name{X: `dump`, Y: `Dump`},
+	}
+	d.DepthDump(1, args...)
 }

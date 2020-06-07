@@ -7,10 +7,13 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/Kretech/xgo/dynamic"
 	"github.com/fatih/color"
 )
 
 type CliDumper struct {
+	name dynamic.Name
+
 	out io.Writer
 }
 
@@ -22,40 +25,27 @@ var (
 	MarginLine1   = 36 // Deprecated
 )
 
-var _ Dumper = NewCliDumper()
-
-// NewCliDumper
-func NewCliDumper(opts ...Opt) *CliDumper {
-	obj := &CliDumper{
-		out: DefaultWriter,
-	}
-
-	for _, opt := range opts {
-		opt(obj)
-	}
-
-	return obj
-}
-
-type Opt func(*CliDumper)
-
-func OptOut(w io.Writer) Opt {
-	return func(c *CliDumper) {
-		c.out = w
-	}
+func NewCliDumper(X string) CliDumper {
+	c := CliDumper{}
+	c.name.X = X
+	return c
 }
 
 func (c *CliDumper) Dump(args ...interface{}) {
+	c.setY(`Dump`)
+
 	c.DepthDump(1, args...)
 }
 
-func (c *CliDumper) DepthDump(depth int, args ...interface{}) {
+func (c CliDumper) DepthDump(depth int, args ...interface{}) {
 
 	if Disable {
 		return
 	}
 
-	names, compacted := DepthCompact(depth+1, args...)
+	c.setY(`DepthDump`)
+
+	names, compacted := c.name.DepthCompact(depth+1, args...)
 
 	if ShowFileLine1 {
 		_, _ = fmt.Fprintln(c.out, c.headerLine(depth+1, ``))
@@ -80,4 +70,10 @@ func (c *CliDumper) DepthDump(depth int, args ...interface{}) {
 func (c *CliDumper) headerLine(depth int, t string) string {
 	_, file, line, _ := runtime.Caller(depth + 1)
 	return color.New().Sprintf("%s:%d", file, line)
+}
+
+func (c *CliDumper) setY(y string) {
+	if c.name.Y == `` {
+		c.name.Y = y
+	}
 }
