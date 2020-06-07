@@ -1,8 +1,6 @@
 package collection
 
-import (
-	"github.com/Kretech/xgo/random"
-)
+import "math/rand"
 
 const MAX_LEVEL = 32
 const P = 4
@@ -152,7 +150,7 @@ func (l *skipList) RangeByScore(left int, right int, do func(node *SkipListNode)
 // 1/p 的概率使其加一层
 func randomLevel() int {
 	var level = 1
-	for random.Int()&0xFFFF*P < 0xFFFF {
+	for rand.Int()&0xFFFF*P < 0xFFFF {
 		level += 1
 	}
 	return level
