@@ -29,7 +29,7 @@ resp, _ := httpclient.PostRequest("http://foo.com/bar").
 	Form(map[string][]string{}). // set form-urlencode body
 	JSON(struct{}). // set json body
 	Body("content-type", io.Reader). // set other body
-	Do()
+	Do(ctx)
 ```
 
 ### Custom Response Wrapper
