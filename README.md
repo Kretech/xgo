@@ -17,7 +17,6 @@ Go Components
 - [astutil](https://github.com/Kretech/xgo/tree/master/astutil) helpers for ast package
 - [pipe](https://github.com/Kretech/xgo/tree/master/pipe) concurrently call bin in pipe
 - [gotemplate](https://github.com/Kretech/xgo/tree/master/gotemplate) helpers for html/template
-- [random](https://github.com/Kretech/xgo/tree/master/random) wraped math/rand with a time.now's source
 
 ## todo
 
