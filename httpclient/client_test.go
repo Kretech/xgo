@@ -10,7 +10,7 @@ import (
 
 func TestBasic(t *testing.T) {
 	c := httpclient.Default
-	c.Timeout = time.Second / 2
+	c.Timeout = time.Second * 2
 	resp, err := c.Get(context.Background(), "https://www.baidu.com/sugrec")
 	if err != nil {
 		t.Errorf("%+v", err)
