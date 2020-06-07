@@ -68,10 +68,11 @@ func (req *Request) JSONOrError(body interface{}) (*Request, error) {
 }
 
 func (r *Request) BuildRequest(ctx context.Context) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(r.method), r.url, r.body)
+	req, err := http.NewRequest(strings.ToUpper(r.method), r.url, r.body)
 	if err != nil {
 		return nil, errors.Wrapf(err, `NewRequestWithContext`)
 	}
+	req = req.WithContext(ctx)
 
 	for k, v := range r.header {
 		req.Header[k] = v
