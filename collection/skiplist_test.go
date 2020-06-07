@@ -2,10 +2,10 @@ package collection
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 	"testing"
 
-	"github.com/Kretech/xgo/random"
 	"github.com/Kretech/xgo/test"
 )
 
@@ -54,7 +54,7 @@ func TestSkipList_Sort(t *testing.T) {
 	num := 10
 	a := make([]int, num)
 	for i := 0; i < num; i++ {
-		a[i] = random.Int() % 1000000
+		a[i] = rand.Int() % 1000000
 		l.Put(a[i], a[i])
 	}
 
