@@ -13,7 +13,7 @@ dArray := []interface{}{&cMap, aInt, bStr}
 dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 ```
 
-![](https://ws1.sinaimg.cn/mw690/8f9ce571ly1g13yuxm4boj20tk0zuncl.jpg)
+![](https://i.loli.net/2020/06/03/ojTUsJAui5WKFMf.png)
 
 ## Usage
 

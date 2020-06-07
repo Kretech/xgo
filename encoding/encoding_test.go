@@ -2,8 +2,10 @@ package encoding
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Kretech/xgo/test"
 )
@@ -47,4 +49,21 @@ func TestJsonDecodeObject(t *testing.T) {
 	JsonDecode(`{"id":4,"name":"hi"}`, &m2)
 
 	test.AssertEqual(t, m1, m2)
+}
+
+func TestJsonMarshalTime(t *testing.T) {
+	m := map[string]interface{}{
+		"t": time.Date(2001, 1, 1, 1, 1, 0, 0, time.Local),
+		"X": time.Date(1002, 1, 1, 1, 1, 0, 0, time.Local),
+	}
+	s := JsonEncode(m)
+	fmt.Println(s)
+
+	type A struct {
+		X time.Time
+	}
+
+	m2 := A{}
+	err := JsonDecode(s, &m2)
+	fmt.Println(m2, err)
 }

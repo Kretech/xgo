@@ -17,6 +17,8 @@ package main
 
 import "fmt"
 
+var ConstName = "const"
+
 func main() {
 	a := 1
 	b := 2
@@ -31,7 +33,7 @@ func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 }
 
-func TestChildren(t *testing.T) {
+func TestFind(t *testing.T) {
 
 	t.Run(`print`, func(t *testing.T) {
 		buf := bytes.NewBufferString(``)
@@ -41,19 +43,25 @@ func TestChildren(t *testing.T) {
 
 	t.Run(`queryField`, func(t *testing.T) {
 		EnableLog()
-		f, err := Find(astFile, []interface{}{new(ast.FuncDecl)})
-		t.Log(Name(f[0]), err) // assert len(f)>0
+		DisableLog()
+		t.Run(`func`, func(t *testing.T) {
+			f, err := Find(astFile, []interface{}{new(ast.FuncDecl)})
+			t.Log(Name(f[0]), err) // assert len(f)>0
+		})
 
-		children, err := Find(astFile, []interface{}{new(ast.FuncDecl), new(ast.AssignStmt)})
-		for _, child := range children {
-			t.Log(Name(child), SrcOf(child))
-		}
+		t.Run(`func.assign`, func(t *testing.T) {
+			children, _ := Find(astFile, []interface{}{new(ast.FuncDecl), new(ast.AssignStmt)})
+			for _, child := range children {
+				t.Log(Name(child), SrcOf(child))
+			}
+		})
 
-		exps, err := Find(astFile, []interface{}{new(ast.Expr)})
-		for _, child := range exps {
-			t.Log(Name(child), SrcOf(child))
-		}
-		//t.Log(Name(exp[0]), err)
+		t.Run(`expr`, func(t *testing.T) {
+			exps, _ := Find(astFile, []interface{}{new(ast.Expr)})
+			for _, child := range exps {
+				t.Log(Name(child), SrcOf(child))
+			}
+		})
 	})
 
 }
