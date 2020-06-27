@@ -8,8 +8,9 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/Kretech/xgo/encoding"
 	"github.com/fatih/color"
+
+	"github.com/Kretech/xgo/encoding"
 )
 
 var (
@@ -60,6 +61,9 @@ func serializeScalar(V reflect.Value) (result string) {
 		reflect.Uint /*reflect.Uint8,*/, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
 		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128:
 
+		result = fmt.Sprint(V.Interface())
+
+	default:
 		result = fmt.Sprint(V.Interface())
 	}
 
@@ -113,10 +117,6 @@ func Serialize(originValue interface{}) (serialized string) {
 	head := color.New(color.FgGreen).Sprint(rTName) + " "
 
 	func() {
-		defer func() {
-
-		}()
-
 		if hasLen(T.Kind()) {
 			head += "("
 			head += fmt.Sprintf("len=%v", color.New(color.FgYellow).Sprint(V.Len()))
@@ -227,7 +227,7 @@ func Serialize(originValue interface{}) (serialized string) {
 				newValue := reflect.NewAt(fieldT.Type, unsafe.Pointer(field.UnsafeAddr())).Elem()
 				buf.WriteString(Serialize(newValue.Interface()))
 			} else {
-				buf.WriteString("unaddressable")
+				buf.WriteString("unaddressable: " + field.String())
 			}
 
 			if i+1 >= MaxMapLen {
