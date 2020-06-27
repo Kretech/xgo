@@ -21,9 +21,14 @@ type Name struct {
 	Y string
 }
 
+func NameOf(x string) Name {
+	return Name{X: x}
+}
+
 // VarName return the variable names
 // VarName(a, b) => []string{"a", "b"}
 func (n Name) VarName(args ...interface{}) []string {
+	n = n.setY(func() string { return CallerNameSkip(2, true) })
 	return n.VarNameDepth(1, args...)
 }
 
@@ -35,6 +40,8 @@ func (n Name) VarName(args ...interface{}) []string {
 // second, get astFile with ast/parser
 // last, match function parameters in ast and get the code
 func (n Name) VarNameDepth(skip int, args ...interface{}) (names []string) {
+	n = n.setY(func() string { return CallerNameSkip(2, true) })
+
 	_, calledFile, calledLine, _ := runtime.Caller(skip + 1)
 
 	shouldCalledExpr := n.X + `.` + n.Y
@@ -87,12 +94,12 @@ func (n Name) VarNameDepth(skip int, args ...interface{}) (names []string) {
 }
 
 func VarName(args ...interface{}) []string {
-	name := Name{X: `dynamic`, Y: `VarName`}
+	name := Name{X: `dynamic`, Y: CallerName(true)}
 	return name.VarNameDepth(1, args...)
 }
 
 func VarNameDepth(skip int, args ...interface{}) []string {
-	name := Name{X: `dynamic`, Y: `VarNameDepth`}
+	name := Name{X: `dynamic`, Y: CallerName(true)}
 	return name.VarNameDepth(skip+1, args...)
 }
 
@@ -106,4 +113,12 @@ func cacheGet(key string, backup func() interface{}) interface{} {
 	}
 
 	return v
+}
+
+func (name Name) setY(y func() string) Name {
+	if name.Y == `` {
+		name.Y = y()
+	}
+
+	return name
 }
