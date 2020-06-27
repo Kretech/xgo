@@ -31,19 +31,24 @@ func NewCliDumper(X string) CliDumper {
 	return c
 }
 
-func (c *CliDumper) Dump(args ...interface{}) {
+func (c CliDumper) Dump(args ...interface{}) {
 	c.setY(`Dump`)
 
 	c.DepthDump(1, args...)
 }
 
 func (c CliDumper) DepthDump(depth int, args ...interface{}) {
-
 	if Disable {
 		return
 	}
 
-	c.setY(`DepthDump`)
+	if c.out == nil {
+		c.out = DefaultWriter
+	}
+
+	c.setYFunc(func() string {
+		return dynamic.CallerNameSkip(2, true)
+	})
 
 	names, compacted := c.name.DepthCompact(depth+1, args...)
 
@@ -54,12 +59,13 @@ func (c CliDumper) DepthDump(depth int, args ...interface{}) {
 	for _, name := range names {
 		txt := ""
 
+		noUnaryName := name
 		if strings.HasPrefix(name, "&") {
 			txt += color.New(color.Italic, color.FgMagenta).Sprint("&")
-			name = name[1:]
+			noUnaryName = name[1:]
 		}
 
-		txt += color.New(color.Italic, color.FgCyan).Sprint(name) + SepKv
+		txt += color.New(color.Italic, color.FgCyan).Sprint(noUnaryName) + SepKv
 
 		txt += Serialize(compacted[name])
 
@@ -75,5 +81,11 @@ func (c *CliDumper) headerLine(depth int, t string) string {
 func (c *CliDumper) setY(y string) {
 	if c.name.Y == `` {
 		c.name.Y = y
+	}
+}
+
+func (c *CliDumper) setYFunc(y func() string) {
+	if c.name.Y == `` {
+		c.name.Y = y()
 	}
 }

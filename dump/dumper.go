@@ -15,7 +15,7 @@ var (
 func Dump(args ...interface{}) {
 	d := &CliDumper{
 		out:  os.Stdout,
-		name: dynamic.Name{X: `dump`, Y: `Dump`},
+		name: dynamic.Name{X: `dump`, Y: dynamic.CallerName(true)},
 	}
 	d.DepthDump(1, args...)
 }
