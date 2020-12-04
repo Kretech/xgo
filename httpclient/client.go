@@ -50,7 +50,7 @@ func (c *Client) Get(ctx context.Context, uri string, query ...map[string]string
 		uri = u.String()
 	}
 
-	req := NewRequestBuilder(`GET`, uri)
+	req := NewRequest(`GET`, uri)
 	return c.DoRequest(ctx, req)
 }
 
@@ -70,7 +70,7 @@ func (c *Client) PostJSON(ctx context.Context, url string, body interface{}) (*R
 func (c *Client) Post(ctx context.Context, url, contentType string, body io.Reader) (resp *Response, err error) {
 	url = c.mergeHost(url)
 
-	req := NewRequestBuilder(`POST`, url).Body(contentType, body)
+	req := NewRequest(`POST`, url).Body(contentType, body)
 
 	return c.DoRequest(ctx, req)
 }

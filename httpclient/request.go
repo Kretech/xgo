@@ -21,58 +21,60 @@ type Request struct {
 	body   io.Reader
 }
 
-func NewRequestBuilder(method string, url string) *Request {
+// NewRequest
+func NewRequest(method string, url string) *Request {
 	return &Request{
 		method: method,
 		url:    url,
 	}
 }
 
-func HeadRequest(url string) *Request { return NewRequestBuilder("HEAD", url) }
-func GetRequest(url string) *Request  { return NewRequestBuilder("GET", url) }
-func PostRequest(url string) *Request { return NewRequestBuilder("POST", url) }
-func PutRequest(url string) *Request  { return NewRequestBuilder("PUT", url) }
-
-func (req *Request) Header(key, value string) *Request {
-	req.header.Set(key, value)
-	return req
+// Header set header
+func (r *Request) Header(key, value string) *Request {
+	r.header.Set(key, value)
+	return r
 }
 
-func (req *Request) Body(contentType string, body io.Reader) *Request {
-	req.Header("Content-Type", contentType)
-	req.body = body
-	return req
+// Body set body with content-type
+func (r *Request) Body(contentType string, body io.Reader) *Request {
+	r.Header("Content-Type", contentType)
+	r.body = body
+	return r
 }
 
-func (req *Request) Form(form url.Values) *Request {
-	return req.Body("application/x-www-form-urlencoded", strings.NewReader(form.Encode()))
+// Form set body with application/x-www-form-urlencoded
+func (r *Request) Form(form url.Values) *Request {
+	return r.Body("application/x-www-form-urlencoded", strings.NewReader(form.Encode()))
 }
 
-func (req *Request) JSON(body interface{}) *Request {
-	req, err := req.JSONOrError(body)
+// JSON set body with application/json
+func (r *Request) JSON(body interface{}) *Request {
+	r, err := r.JSONOrError(body)
 	if err != nil {
 		panic(err)
 	}
 
-	return req
+	return r
 }
 
-func (req *Request) JSONOrError(body interface{}) (*Request, error) {
-	req.Header("Content-Type", "application/json")
+// JSONOrError set body with application/json
+// return error when marshal failed
+func (r *Request) JSONOrError(body interface{}) (*Request, error) {
+	r.Header("Content-Type", "application/json")
 	b, err := json.Marshal(body)
 	if err != nil {
-		return req, errors.Wrapf(err, `json.Marshal error`)
+		return r, errors.Wrapf(err, `json.Marshal error`)
 	}
 
-	return req.Body("application/json", bytes.NewReader(b)), nil
+	return r.Body("application/json", bytes.NewReader(b)), nil
 }
 
-func (r *Request) BuildRequest(ctx context.Context) (*http.Request, error) {
-	req, err := http.NewRequest(strings.ToUpper(r.method), r.url, r.body)
+// Build to http.Request
+func (r *Request) Build(ctx context.Context) (*http.Request, error) {
+	req, err := http.NewRequestWithContext(ctx, strings.ToUpper(r.method), r.url, r.body)
 	if err != nil {
 		return nil, errors.Wrapf(err, `NewRequestWithContext`)
 	}
-	req = req.WithContext(ctx)
 
 	for k, v := range r.header {
 		req.Header[k] = v
@@ -85,6 +87,7 @@ var (
 	DefaultHttpClient = &http.Client{Timeout: 15 * time.Second}
 )
 
+// Do client.do
 func (r *Request) Do(ctx context.Context, clients ...*http.Client) (resp *Response, err error) {
 	var c *http.Client
 	if len(clients) > 0 {
@@ -93,17 +96,17 @@ func (r *Request) Do(ctx context.Context, clients ...*http.Client) (resp *Respon
 		c = DefaultHttpClient
 	}
 
-	req, err := r.BuildRequest(ctx)
+	req, err := r.Build(ctx)
 	if err != nil {
 		return
 	}
 
-	stdresp, err := c.Do(req)
+	httpResp, err := c.Do(req)
 	if err != nil {
 		return nil, errors.Wrapf(err, `Do`)
 	}
 
 	resp = &Response{}
-	resp.Response = stdresp
+	resp.Response = httpResp
 	return
 }

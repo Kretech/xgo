@@ -26,6 +26,7 @@ func (r *Response) Bytes() (bytes []byte, err error) {
 		err = errors.Wrapf(err, "Response.ReadAll")
 		return []byte{}, err
 	}
+	defer r.Body.Close()
 
 	return r.bytes, nil
 }
@@ -39,15 +40,15 @@ func (r *Response) String() (string, error) {
 }
 
 var (
-	Unmarshals = map[string]func([]byte, interface{}) error{
+	Unmarshalers = map[string]func([]byte, interface{}) error{
 		`application/json`: JsonUnmarshaler,
 		`application/xml`:  XmlUnmarshaler,
 	}
 
 	DefaultUnmarshaler = JsonUnmarshaler
 
-	JsonUnmarshaler = func(b []byte, v interface{}) error { return json.Unmarshal(b, v) }
-	XmlUnmarshaler  = func(b []byte, v interface{}) error { return xml.Unmarshal(b, v) }
+	JsonUnmarshaler = func(data []byte, v interface{}) error { return json.Unmarshal(data, v) }
+	XmlUnmarshaler  = func(data []byte, v interface{}) error { return xml.Unmarshal(data, v) }
 )
 
 func (r *Response) To(v interface{}) error {
@@ -58,9 +59,9 @@ func (r *Response) To(v interface{}) error {
 
 	var found bool
 	contentType := r.Response.Header.Get("Content-Type")
-	for key, un := range Unmarshals {
+	for key, unmarshaler := range Unmarshalers {
 		if strings.Contains(contentType, key) {
-			err = un(bytes, v)
+			err = unmarshaler(bytes, v)
 			if err == nil {
 				found = true
 				break
@@ -84,6 +85,12 @@ func (r *Response) To(v interface{}) error {
 	return nil
 }
 
+func (r *Response) ToInterface() (interface{}, error) {
+	var i interface{}
+	err := r.To(&i)
+	return i, err
+}
+
 func (r *Response) UnwrapTo(w ResponseWrapper, v interface{}) error {
 	w.SetData(v)
 	err := r.To(w)
@@ -102,11 +109,5 @@ func (r *Response) UnwrapTo(w ResponseWrapper, v interface{}) error {
 func (r *Response) UnwrapToInterface(w ResponseWrapper) (interface{}, error) {
 	var i interface{}
 	err := r.UnwrapTo(w, &i)
-	return i, err
-}
-
-func (r *Response) ToInterface() (interface{}, error) {
-	var i interface{}
-	err := r.To(&i)
 	return i, err
 }
