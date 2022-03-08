@@ -18,11 +18,10 @@ type CliDumper struct {
 }
 
 var (
-	DefaultWriter io.Writer = os.Stdout
+	DefaultWriter io.Writer = os.Stderr
 
 	// 显示对应代码位置
 	ShowFileLine1 = true
-	MarginLine1   = 36 // Deprecated
 )
 
 func NewCliDumper(X string) CliDumper {

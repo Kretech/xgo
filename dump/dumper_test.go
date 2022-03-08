@@ -8,7 +8,6 @@ import (
 )
 
 func TestDump_Example(t *testing.T) {
-
 	t.Run(`base`, func(t *testing.T) {
 		dump.OptShowUint8sAsString = true
 		dump.OptShowUint8AsChar = true
@@ -16,7 +15,6 @@ func TestDump_Example(t *testing.T) {
 		bStr := `sf`
 		cMap := map[string]interface{}{"name": "z", "age": 14, "bytes": []byte(string(`abc`)), `aByte`: byte('c')}
 		dArray := []interface{}{&cMap, aInt, bStr}
-		//dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 		dump.Dump(aInt, &aInt, &bStr, bStr, cMap, dArray, cMap["name"], dArray[2], dArray[aInt])
 	})
 
@@ -63,11 +61,13 @@ func TestDump_Example(t *testing.T) {
 			action []func() string
 		}
 
-		p1 := Person{Name: "lisan", age: 19, Interests: []string{"a", "b"}, Cars: []*car{{Speed: 120}},
+		p1 := Person{
+			Name: "lisan", age: 19, Interests: []string{"a", "b"}, Cars: []*car{{Speed: 120}},
 			action: []func() string{
 				func() string { return "sayHi" },
 				func() string { return "sayBay" },
-			}}
+			},
+		}
 		p2 := &p1
 
 		dump.Dump(p2)
@@ -106,8 +106,7 @@ func TestDump_Example(t *testing.T) {
 	dump.Dump(ch)
 }
 
-type _S struct {
-}
+type _S struct{}
 
 func (this *_S) a() string {
 	return `_s.a`
