@@ -1,11 +1,30 @@
 package dump_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Kretech/xgo/dump"
 	"github.com/Kretech/xgo/encoding"
 )
+
+func ExampleDump() {
+	// just for testing
+	dump.ShowFileLine1 = false
+	dump.DefaultWriter = os.Stdout
+
+	a := 1
+	b := `2`
+	c := map[string]interface{}{b: a}
+
+	dump.Dump(a, b, c)
+	// Output:
+	// a => 1
+	// b => "2"
+	// c => map[string]interface{} (len=1) {
+	// 	"2" => 1
+	// }
+}
 
 func TestDump_Example(t *testing.T) {
 	t.Run(`base`, func(t *testing.T) {
