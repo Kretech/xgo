@@ -46,7 +46,7 @@ func (c CliDumper) DepthDump(depth int, args ...interface{}) {
 	}
 
 	c.setYFunc(func() string {
-		return dynamic.CallerNameSkip(2, true)
+		return dynamic.CallerNameSkip(2+depth, true)
 	})
 
 	names, compacted := c.name.DepthCompact(depth+1, args...)

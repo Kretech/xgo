@@ -56,7 +56,7 @@ func TestSerialize(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotSerialized := Serialize(tt.originValue); !equalNoSpace(gotSerialized, tt.wantSerialized) {
 				t.Errorf("Serialize() = %v want %v", gotSerialized, tt.wantSerialized)
-				//t.Errorf("Serialize() = %v escape = %v want %v", gotSerialized, escapeSpace(gotSerialized, " \t\n\r"), tt.wantSerialized)
+				// t.Errorf("Serialize() = %v escape = %v want %v", gotSerialized, escapeSpace(gotSerialized, " \t\n\r"), tt.wantSerialized)
 			}
 		})
 	}
