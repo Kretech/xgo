@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"time"
 	"unsafe"
 
 	"github.com/fatih/color"
@@ -99,14 +100,14 @@ func Serialize(originValue interface{}) (serialized string) {
 		return Zero
 	}
 
+	if isPtr {
+		serialized += color.New(color.FgMagenta).Sprint("*")
+	}
+
 	// 基础类型
 	if IsScalar(originValue) {
 		serialized = serializeScalar(V)
 		return
-	}
-
-	if isPtr {
-		serialized += color.New(color.FgMagenta).Sprint("*")
 	}
 
 	//复合类型
@@ -136,6 +137,10 @@ func Serialize(originValue interface{}) (serialized string) {
 		}
 
 		serialized += Serialize(string(v))
+		return
+
+	case time.Time:
+		serialized += fmt.Sprintf(`"%s"`, v.String())
 		return
 	}
 
