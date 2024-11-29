@@ -3,10 +3,15 @@ package dump_test
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/Kretech/xgo/dump"
 	"github.com/Kretech/xgo/encoding"
 )
+
+func init() {
+	time.Local = time.UTC
+}
 
 func ExampleDump() {
 	// just for testing
@@ -14,16 +19,22 @@ func ExampleDump() {
 	dump.DefaultWriter = os.Stdout
 
 	a := 1
+	a2 := &a
 	b := `2`
 	c := map[string]interface{}{b: a}
+	t1 := time.Unix(1500000000, 0)
+	t2 := &t1
 
-	dump.Dump(a, b, c)
+	dump.Dump(a, a2, b, c, t1, t2)
 	// Output:
 	// a => 1
+	// a2 => *1
 	// b => "2"
 	// c => map[string]interface{} (len=1) {
 	// 	"2" => 1
 	// }
+	// t1 => time.Time 2017-07-14 02:40:00 +0000 UTC
+	// t2 => *time.Time 2017-07-14 02:40:00 +0000 UTC
 }
 
 func TestDump_Example(t *testing.T) {

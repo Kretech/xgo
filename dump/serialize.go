@@ -77,6 +77,7 @@ func Serialize(originValue interface{}) (serialized string) {
 	}
 
 	result := originValue
+	nonPtrValue := originValue
 
 	var V reflect.Value
 
@@ -101,12 +102,13 @@ func Serialize(originValue interface{}) (serialized string) {
 	}
 
 	if isPtr {
+		nonPtrValue = V.Interface()
 		serialized += color.New(color.FgMagenta).Sprint("*")
 	}
 
 	// 基础类型
-	if IsScalar(originValue) {
-		serialized = serializeScalar(V)
+	if IsScalar(nonPtrValue) {
+		serialized += serializeScalar(V)
 		return
 	}
 
@@ -130,7 +132,7 @@ func Serialize(originValue interface{}) (serialized string) {
 	serialized += head
 
 	// special complex
-	switch v := originValue.(type) {
+	switch v := nonPtrValue.(type) {
 	case []byte:
 		if !OptShowUint8sAsString {
 			break
@@ -140,7 +142,7 @@ func Serialize(originValue interface{}) (serialized string) {
 		return
 
 	case time.Time:
-		serialized += fmt.Sprintf(`"%s"`, v.String())
+		serialized += v.String()
 		return
 	}
 

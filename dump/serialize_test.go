@@ -50,12 +50,12 @@ func TestSerialize(t *testing.T) {
 		{"Integer", Integer(3), "3"},
 		{"float", 0.3, "0.3"},
 		{"string", "abc", `"abc"`},
-		{"*string", ptrString("abc"), `"abc"`},
+		{"*string", ptrString("abc"), `*"abc"`},
 		{"String", String("abc"), `"abc"`},
 		{"[]byte", []byte("abc"), `[]uint8 (len=3) "abc"`},
 		{"map", map[string]int{"a": 1, "b": 2, "c": 3}, `map[string]int(len=3){"a"=>1"b"=>2"c"=>3}`},
 		{"slice", []int{1, 3, 2}, "[]int(len=3)[0=>1\n1=>3\n2=>2]"},
-		{"time", time.Unix(1500000000, 0), `time.Time "2017-07-14 02:40:00 +0000 UTC"`},
+		{"time", time.Unix(1500000000, 0), `time.Time 2017-07-14 02:40:00 +0000 UTC`},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
