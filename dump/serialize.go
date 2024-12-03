@@ -128,28 +128,22 @@ func Serialize(originValue interface{}) (serialized string) {
 		}
 	}()
 
-	// 恶心。。
 	serialized += head
 
 	// special complex
 	switch v := nonPtrValue.(type) {
-	case []byte:
-		if !OptShowUint8sAsString {
-			break
-		}
-
-		serialized += Serialize(string(v))
-		return
-
 	case time.Time:
 		serialized += v.String()
 		return
 	}
 
-	// ...
-
 	switch T.Kind() {
 	case reflect.Array, reflect.Slice:
+
+		if T.Elem().Kind() == reflect.Uint8 && OptShowUint8sAsString {
+			serialized += Serialize(fmt.Sprintf("%s", nonPtrValue))
+			return
+		}
 
 		buf := bytes.Buffer{}
 		buf.WriteString("[")

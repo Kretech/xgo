@@ -24,8 +24,11 @@ func ExampleDump() {
 	c := map[string]interface{}{b: a}
 	t1 := time.Unix(1500000000, 0)
 	t2 := &t1
+	s1 := []byte(`123456789012`)
+	s2 := [12]byte{65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76}
+	s3 := &s2
 
-	dump.Dump(a, a2, b, c, t1, t2)
+	dump.Dump(a, a2, b, c, t1, t2, s1, s2, s3)
 	// Output:
 	// a => 1
 	// a2 => *1
@@ -35,6 +38,9 @@ func ExampleDump() {
 	// }
 	// t1 => time.Time 2017-07-14 02:40:00 +0000 UTC
 	// t2 => *time.Time 2017-07-14 02:40:00 +0000 UTC
+	// s1 => []uint8 (len=12) "123456789012"
+	// s2 => [12]uint8 (len=12) "ABCDEFGHIJKL"
+	// s3 => *[12]uint8 (len=12) "ABCDEFGHIJKL"
 }
 
 func TestDump_Example(t *testing.T) {
